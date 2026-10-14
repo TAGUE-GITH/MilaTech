@@ -1,9 +1,7 @@
 package com.milatech.sale;
 
 import java.io.ByteArrayOutputStream;
-import java.text.NumberFormat;
 import java.time.format.DateTimeFormatter;
-import java.util.Locale;
 
 import com.lowagie.text.Document;
 import com.lowagie.text.Element;
@@ -14,6 +12,7 @@ import com.lowagie.text.Rectangle;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
+import com.milatech.common.Money;
 
 /** US-12 : recu de vente au format ticket (80 mm de large), a imprimer ou a partager sur WhatsApp. */
 final class ReceiptPdf {
@@ -25,11 +24,6 @@ final class ReceiptPdf {
 	private static final Font SMALL = FontFactory.getFont(FontFactory.HELVETICA, 7);
 
 	private ReceiptPdf() {
-	}
-
-	static String fcfa(long amount) {
-		return NumberFormat.getIntegerInstance(Locale.FRANCE).format(amount).replace(' ', ' ').replace(' ', ' ')
-				+ " FCFA";
 	}
 
 	static byte[] render(Sale sale) {
@@ -52,12 +46,12 @@ final class ReceiptPdf {
 		table.setWidthPercentage(100);
 		table.setSpacingBefore(8);
 		for (SaleLine line : sale.getLines()) {
-			cell(table, line.getQuantity() + " × " + line.getProductName() + "\n" + fcfa(line.getUnitPrice()) + " l'unité",
+			cell(table, line.getQuantity() + " × " + line.getProductName() + "\n" + Money.fcfa(line.getUnitPrice()) + " l'unité",
 					TEXT, Element.ALIGN_LEFT);
-			cell(table, fcfa(line.getLineTotal()), TEXT, Element.ALIGN_RIGHT);
+			cell(table, Money.fcfa(line.getLineTotal()), TEXT, Element.ALIGN_RIGHT);
 		}
 		PdfPCell label = new PdfPCell(new Paragraph("TOTAL", BOLD));
-		PdfPCell total = new PdfPCell(new Paragraph(fcfa(sale.getTotal()), BOLD));
+		PdfPCell total = new PdfPCell(new Paragraph(Money.fcfa(sale.getTotal()), BOLD));
 		total.setHorizontalAlignment(Element.ALIGN_RIGHT);
 		for (PdfPCell c : new PdfPCell[] { label, total }) {
 			c.setBorder(Rectangle.TOP);

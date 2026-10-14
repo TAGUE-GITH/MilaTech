@@ -1,4 +1,4 @@
-import { AlertTriangle, CircuitBoard, Contact, FolderTree, Home, LogOut, Menu, Package, Receipt, ShoppingCart, Users, X } from 'lucide-react'
+import { AlertTriangle, CircuitBoard, Contact, FolderTree, Home, LogOut, Menu, Package, Receipt, ShoppingCart, Users, Wrench, X } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import { useState } from 'react'
 import { Link, NavLink, Outlet } from 'react-router-dom'
@@ -13,6 +13,7 @@ const NAV: NavItem[] = [
   { to: '/', label: 'Accueil', Icon: Home },
   { to: '/caisse', label: 'Caisse', Icon: ShoppingCart, roles: ['GERANT', 'VENDEUR'] },
   { to: '/ventes', label: 'Ventes', Icon: Receipt, roles: ['GERANT', 'VENDEUR'] },
+  { to: '/reparations', label: 'Réparations', Icon: Wrench, roles: ['GERANT', 'TECHNICIEN', 'VENDEUR'] },
   { to: '/clients', label: 'Clients', Icon: Contact },
   { to: '/produits', label: 'Produits et stock', Icon: Package },
   { to: '/stock/alertes', label: 'Stock bas', Icon: AlertTriangle, roles: ['GERANT', 'VENDEUR'] },

@@ -136,6 +136,91 @@ export type SaleLine = {
 
 export type Sale = Omit<SaleSummary, 'customer'> & { customer?: Named; lines: SaleLine[] }
 
-export type CustomerDetail = { customer: Customer; sales: SaleSummary[]; totalSpent: number }
+export type CustomerDetail = { customer: Customer; sales: SaleSummary[]; totalSpent: number; repairs: RepairSummary[] }
 
 export type PeriodTotals = { count: number; total: number; margin: number }
+
+export type RepairStatus = 'RECU' | 'EN_DIAGNOSTIC' | 'EN_REPARATION' | 'REPARE' | 'IRREPARABLE' | 'ANNULE' | 'RESTITUE'
+
+export const REPAIR_STATUS_LABELS: Record<RepairStatus, string> = {
+  RECU: 'Reçu',
+  EN_DIAGNOSTIC: 'En diagnostic',
+  EN_REPARATION: 'En réparation',
+  REPARE: 'Réparé',
+  IRREPARABLE: 'Irréparable',
+  ANNULE: 'Annulé',
+  RESTITUE: 'Restitué',
+}
+
+export type DeviceType = 'TELEPHONE' | 'ORDINATEUR' | 'TABLETTE' | 'BLUETOOTH' | 'AUTRE'
+
+export const DEVICE_LABELS: Record<DeviceType, string> = {
+  TELEPHONE: 'Téléphone',
+  ORDINATEUR: 'Ordinateur',
+  TABLETTE: 'Tablette',
+  BLUETOOTH: 'Appareil Bluetooth',
+  AUTRE: 'Autre',
+}
+
+export type Reception = 'BOUTIQUE' | 'DOMICILE'
+
+export type RepairSummary = {
+  id: number
+  reference: string
+  customer: string
+  customerPhone: string
+  device: string
+  deviceType: DeviceType
+  status: RepairStatus
+  statusLabel: string
+  promisedOn: string | null
+  total: number
+  balance: number
+  receivedAt: string
+}
+
+export type Repair = {
+  id: number
+  reference: string
+  customer: { id: number; fullName: string; phone: string }
+  deviceType: DeviceType
+  brand: string | null
+  model: string | null
+  device: string
+  serialNumber: string | null
+  accessories: string | null
+  reception: Reception
+  reportedIssue: string
+  diagnosis: string | null
+  status: RepairStatus
+  statusLabel: string
+  nextStatuses: RepairStatus[]
+  laborCost: number
+  estimatedCost: number | null
+  promisedOn: string | null
+  total: number
+  paid: number
+  balance: number
+  remainingToPay: number
+  receivedBy: string
+  receivedAt: string
+  returnedAt: string | null
+  parts: { id: number; productId: number; productName: string; quantity: number; unitPrice: number; lineTotal: number }[]
+  events: { status: RepairStatus; label: string; note: string | null; author: string; createdAt: string }[]
+  payments: { id: number; amount: number; method: PaymentMethod; receivedBy: string; paidAt: string }[]
+}
+
+export type NewRepair = {
+  customerId: number | null
+  deviceType: DeviceType
+  brand: string
+  model: string
+  serialNumber: string
+  accessories: string
+  reception: Reception
+  reportedIssue: string
+  estimatedCost: number | ''
+  promisedOn: string
+  deposit: number | ''
+  depositMethod: PaymentMethod
+}

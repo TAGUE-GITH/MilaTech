@@ -6,8 +6,9 @@ import { Link, useParams } from 'react-router-dom'
 import { customersApi, errorMessage, fieldErrors } from '../../api/client'
 import { PAYMENT_LABELS } from '../../api/types'
 import type { Customer, CustomerForm } from '../../api/types'
-import { Alert, Button, Card, Field, Loader, PageHeader, TextArea } from '../../components/ui'
+import { Alert, Badge, Button, Card, Field, Loader, PageHeader, TextArea } from '../../components/ui'
 import { formatDate, formatFcfa } from '../../lib/format'
+import { statusTone } from '../../lib/repairs'
 import { whatsappLink } from '../../lib/whatsapp'
 
 // US-10 : fiche d'un client et son historique
@@ -76,7 +77,21 @@ export default function CustomerDetailPage() {
               </li>
             ))}
           </ul>
-          <p className="mt-4 text-xs text-slate-400">Les réparations et les formations apparaîtront ici aux prochains sprints.</p>
+          <h2 className="mt-6 mb-3 font-bold">Réparations</h2>
+          {data.repairs.length === 0 && <p className="text-sm text-slate-500">Aucune réparation pour le moment.</p>}
+          <ul className="divide-y divide-slate-100">
+            {data.repairs.map((repair) => (
+              <li key={repair.id}>
+                <Link to={`/reparations/${repair.id}`} className="flex items-center justify-between gap-3 py-2.5 text-sm hover:text-brand-700">
+                  <span>
+                    <span className="font-semibold">{repair.device}</span>
+                    <span className="text-slate-500"> · {repair.reference} · {formatDate(repair.receivedAt)}</span>
+                  </span>
+                  <Badge tone={statusTone(repair.status)}>{repair.statusLabel}</Badge>
+                </Link>
+              </li>
+            ))}
+          </ul>
         </Card>
       </div>
     </>

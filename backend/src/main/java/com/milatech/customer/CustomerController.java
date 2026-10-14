@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.milatech.common.ApiException;
+import com.milatech.repair.RepairDtos.RepairSummary;
+import com.milatech.repair.RepairRepository;
 import com.milatech.sale.SaleDtos.SaleSummary;
 import com.milatech.sale.SaleRepository;
 import com.milatech.user.Role;
@@ -47,16 +49,19 @@ public class CustomerController {
 		}
 	}
 
-	/** Fiche complete : coordonnees et historique (achats ; reparations et formations aux sprints suivants). */
-	public record CustomerDetail(CustomerResponse customer, List<SaleSummary> sales, long totalSpent) {
+	/** Fiche complete : coordonnees et historique (achats, reparations ; formations au sprint 4). */
+	public record CustomerDetail(CustomerResponse customer, List<SaleSummary> sales, long totalSpent,
+			List<RepairSummary> repairs) {
 	}
 
 	private final CustomerRepository customers;
 	private final SaleRepository sales;
+	private final RepairRepository repairs;
 
-	public CustomerController(CustomerRepository customers, SaleRepository sales) {
+	public CustomerController(CustomerRepository customers, SaleRepository sales, RepairRepository repairs) {
 		this.customers = customers;
 		this.sales = sales;
+		this.repairs = repairs;
 	}
 
 	@GetMapping
@@ -87,7 +92,8 @@ public class CustomerController {
 		var history = sales.findByCustomer(id);
 		return new CustomerDetail(CustomerResponse.of(customer),
 				history.stream().map(sale -> SaleSummary.of(sale, manager)).toList(),
-				history.stream().mapToLong(sale -> sale.getTotal()).sum());
+				history.stream().mapToLong(sale -> sale.getTotal()).sum(),
+				repairs.findByCustomer(id).stream().map(RepairSummary::of).toList());
 	}
 
 	private Customer find(Long id) {

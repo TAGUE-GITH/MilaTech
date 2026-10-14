@@ -51,13 +51,13 @@ describe('Menu selon le role (US-02)', () => {
   it('montre tout au gerant', () => {
     loggedAs('GERANT')
     renderPage(<Layout />)
-    expect(menu()).toEqual(['Accueil', 'Caisse', 'Ventes', 'Clients', 'Produits et stock', 'Stock bas', 'Catégories et fournisseurs', 'Employés'])
+    expect(menu()).toEqual(['Accueil', 'Caisse', 'Ventes', 'Réparations', 'Clients', 'Produits et stock', 'Stock bas', 'Catégories et fournisseurs', 'Employés'])
   })
 
   it('cache la gestion au technicien', () => {
     loggedAs('TECHNICIEN')
     renderPage(<Layout />)
-    expect(menu()).toEqual(['Accueil', 'Clients', 'Produits et stock'])
+    expect(menu()).toEqual(['Accueil', 'Réparations', 'Clients', 'Produits et stock'])
   })
 })
 

@@ -4,11 +4,15 @@ import type {
   Customer,
   CustomerDetail,
   CustomerForm,
+  NewRepair,
   NewUser,
   PaymentMethod,
   PeriodTotals,
   Product,
   ProductForm,
+  Repair,
+  RepairStatus,
+  RepairSummary,
   Sale,
   SaleSummary,
   StockMovement,
@@ -124,12 +128,38 @@ export const salesApi = {
   list: (period: Period) => data(api.get<SaleSummary[]>('/sales', { params: period })),
   summary: (period: Period) => data(api.get<PeriodTotals>('/sales/summary', { params: period })),
   get: (id: number) => data(api.get<Sale>(`/sales/${id}`)),
-  /** Le recu est protege par le jeton : on le telecharge puis on l'ouvre dans un nouvel onglet. */
-  openReceipt: async (id: number) => {
-    const tab = window.open('', '_blank')
-    const response = await api.get<Blob>(`/sales/${id}/receipt`, { responseType: 'blob' })
-    const url = URL.createObjectURL(response.data)
-    if (tab) tab.location.href = url
-    else window.location.href = url
-  },
+  openReceipt: (id: number) => openPdf(`/sales/${id}/receipt`),
+}
+
+/** Les PDF sont proteges par le jeton : on les telecharge puis on les ouvre dans un nouvel onglet. */
+async function openPdf(url: string) {
+  const tab = window.open('', '_blank')
+  const response = await api.get<Blob>(url, { responseType: 'blob' })
+  const file = URL.createObjectURL(response.data)
+  if (tab) tab.location.href = file
+  else window.location.href = file
+}
+
+export type RepairChanges = Partial<{
+  diagnosis: string
+  laborCost: number
+  estimatedCost: number
+  promisedOn: string
+  accessories: string
+}>
+
+export const repairsApi = {
+  list: (filters: { q?: string; status?: RepairStatus | '' } = {}) =>
+    data(api.get<RepairSummary[]>('/repairs', { params: clean(filters) })),
+  get: (id: number) => data(api.get<Repair>(`/repairs/${id}`)),
+  receive: (form: NewRepair) => data(api.post<Repair>('/repairs', clean(form))),
+  update: (id: number, changes: RepairChanges) => data(api.patch<Repair>(`/repairs/${id}`, changes)),
+  move: (id: number, status: RepairStatus, note: string) =>
+    data(api.patch<Repair>(`/repairs/${id}/status`, { status, note })),
+  addPart: (id: number, productId: number, quantity: number) =>
+    data(api.post<Repair>(`/repairs/${id}/parts`, { productId, quantity })),
+  removePart: (id: number, partId: number) => data(api.delete<Repair>(`/repairs/${id}/parts/${partId}`)),
+  pay: (id: number, amount: number, method: PaymentMethod) =>
+    data(api.post<Repair>(`/repairs/${id}/payments`, { amount, method })),
+  openSlip: (id: number) => openPdf(`/repairs/${id}/slip`),
 }
