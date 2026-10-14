@@ -1,11 +1,14 @@
 import { useQuery } from '@tanstack/react-query'
-import { ChevronRight, LogOut, PackageSearch, Wrench } from 'lucide-react'
+import { ChevronRight, LogOut, PackageSearch, Plus, Wrench } from 'lucide-react'
 import { Link, useLocation } from 'react-router-dom'
-import { errorMessage, myOrdersApi } from '../../api/client'
+import { errorMessage, myOrdersApi, myQuotesApi } from '../../api/client'
 import { useAuth } from '../../auth/AuthProvider'
 import { Alert, Badge, Button, Card, Loader } from '../../components/ui'
 import { formatDate, formatFcfa } from '../../lib/format'
 import { clientStepLabel, orderTone } from '../../lib/orders'
+import { clientQuoteLabel, quoteTone } from '../../lib/quotes'
+import { statusTone } from '../../lib/repairs'
+import { buttonClasses } from '../../components/buttonClasses'
 import { ProfilePanel } from '../profile/ProfilePanel'
 
 // « Mon espace » : l'espace personnel d'un client du site
@@ -30,17 +33,12 @@ export default function ClientSpacePage() {
           <Alert type="success">Votre compte est créé. Ajoutez une photo si vous le souhaitez.</Alert>
         </div>
       )}
-      <ProfilePanel />
-      <div className="mt-6 grid gap-6 md:grid-cols-2">
+      <div className="grid gap-6 lg:grid-cols-2">
+        <MyRepairs />
         <MyOrders />
-        <Card className="opacity-80">
-          <h2 className="flex items-center gap-2 font-bold">
-            <Wrench className="size-5 text-brand-700" aria-hidden />
-            Mes réparations et devis
-          </h2>
-          <p className="mt-2 text-sm text-slate-600">Bientôt : demandez un devis et suivez la réparation de vos appareils ici.</p>
-        </Card>
       </div>
+      <h2 className="mt-10 mb-4 text-xl font-bold">Mon profil</h2>
+      <ProfilePanel />
     </div>
   )
 }
@@ -83,6 +81,66 @@ function MyOrders() {
           ))}
         </ul>
       )}
+    </Card>
+  )
+}
+
+/** Reparations en cours ou passees, et demandes de devis envoyees depuis le site. */
+function MyRepairs() {
+  const quotes = useQuery({ queryKey: ['my-quotes'], queryFn: myQuotesApi.list })
+  const repairs = useQuery({ queryKey: ['my-repairs'], queryFn: myQuotesApi.repairs })
+  // Une demande deposee est suivie comme reparation : on ne l'affiche plus en double
+  const pending = quotes.data?.filter((quote) => quote.status !== 'DEPOSEE') ?? []
+
+  return (
+    <Card>
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <h2 className="flex items-center gap-2 font-bold">
+          <Wrench className="size-5 text-brand-700" aria-hidden />
+          Mes réparations et devis
+        </h2>
+        <Link to="/mon-espace/devis/nouveau" className={buttonClasses('primary', 'px-3 py-2')}>
+          <Plus className="size-4" aria-hidden />
+          Demander un devis
+        </Link>
+      </div>
+      {(quotes.isPending || repairs.isPending) && <Loader />}
+      <Alert>{quotes.isError ? errorMessage(quotes.error) : repairs.isError ? errorMessage(repairs.error) : ''}</Alert>
+      {quotes.data && repairs.data && pending.length === 0 && repairs.data.length === 0 && (
+        <p className="mt-2 text-sm text-slate-600">Un appareil en panne ? Décrivez le problème, la boutique vous envoie un prix ici.</p>
+      )}
+      <ul className="mt-2 divide-y divide-slate-100">
+        {repairs.data?.map((repair) => (
+          <li key={`r${repair.id}`}>
+            <Link to={`/mon-espace/reparations/${repair.id}`} className="flex items-center gap-3 py-3 hover:bg-slate-50">
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-semibold">{repair.device}</p>
+                <p className="text-sm text-slate-500">
+                  Réparation {repair.reference}
+                  {repair.balance > 0 ? ` · reste ${formatFcfa(repair.balance)}` : ''}
+                </p>
+              </div>
+              <Badge tone={statusTone(repair.status)}>{repair.statusLabel}</Badge>
+              <ChevronRight className="size-4 text-slate-400" aria-hidden />
+            </Link>
+          </li>
+        ))}
+        {pending.map((quote) => (
+          <li key={`q${quote.id}`}>
+            <Link to={`/mon-espace/devis/${quote.id}`} className="flex items-center gap-3 py-3 hover:bg-slate-50">
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-semibold">{quote.device}</p>
+                <p className="text-sm text-slate-500">
+                  Devis {quote.reference}
+                  {quote.quotedPrice ? ` · ${formatFcfa(quote.quotedPrice)}` : ''}
+                </p>
+              </div>
+              <Badge tone={quoteTone(quote.status)}>{clientQuoteLabel(quote.status)}</Badge>
+              <ChevronRight className="size-4 text-slate-400" aria-hidden />
+            </Link>
+          </li>
+        ))}
+      </ul>
     </Card>
   )
 }

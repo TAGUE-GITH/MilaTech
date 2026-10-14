@@ -71,7 +71,7 @@ export default function LoginPage() {
         </form>
         <p className="mt-6 text-center text-sm text-slate-600">
           Client sans compte ?{' '}
-          <Link to="/inscription" className="font-semibold text-brand-700">
+          <Link to="/inscription" state={from ? { from } : undefined} className="font-semibold text-brand-700">
             Créer un compte
           </Link>
         </p>

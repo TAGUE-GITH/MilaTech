@@ -23,6 +23,8 @@ import com.milatech.repair.RepairStatus;
 import com.milatech.sale.Sale;
 import com.milatech.sale.SaleRepository;
 import com.milatech.sale.SaleService;
+import com.milatech.quote.QuoteRequestRepository;
+import com.milatech.quote.QuoteStatus;
 import com.milatech.shop.OnlineOrderRepository;
 import com.milatech.shop.OrderStatus;
 import com.milatech.training.Enrollment;
@@ -61,7 +63,7 @@ public class DashboardController {
 
 	public record Dashboard(Totals salesToday, Totals salesMonth, List<DaySales> dailySales, List<LowStock> lowStock,
 			long lowStockCount, long repairsInProgress, List<RepairSummary> repairsReady, AmountsDue amountsDue,
-			List<Operation> recent, long ordersToProcess) {
+			List<Operation> recent, long ordersToProcess, long quotesToAnswer) {
 	}
 
 	private final SaleService saleService;
@@ -70,15 +72,18 @@ public class DashboardController {
 	private final RepairRepository repairs;
 	private final EnrollmentRepository enrollments;
 	private final OnlineOrderRepository orders;
+	private final QuoteRequestRepository quotes;
 
 	public DashboardController(SaleService saleService, SaleRepository sales, ProductRepository products,
-			RepairRepository repairs, EnrollmentRepository enrollments, OnlineOrderRepository orders) {
+			RepairRepository repairs, EnrollmentRepository enrollments, OnlineOrderRepository orders,
+			QuoteRequestRepository quotes) {
 		this.saleService = saleService;
 		this.sales = sales;
 		this.products = products;
 		this.repairs = repairs;
 		this.enrollments = enrollments;
 		this.orders = orders;
+		this.quotes = quotes;
 	}
 
 	@GetMapping
@@ -106,7 +111,8 @@ public class DashboardController {
 				low.stream().limit(5).map(p -> new LowStock(p.getId(), p.getName(), p.getQuantity(), p.getAlertThreshold()))
 						.toList(),
 				low.size(), repairs.countByStatusIn(IN_PROGRESS), waiting.stream().map(RepairSummary::of).toList(),
-				new AmountsDue(repairsDue, trainingsDue), recent(), orders.countByStatusIn(OrderStatus.TO_PROCESS));
+				new AmountsDue(repairsDue, trainingsDue), recent(), orders.countByStatusIn(OrderStatus.TO_PROCESS),
+				quotes.countByStatus(QuoteStatus.NOUVELLE));
 	}
 
 	private static LocalDate day(Sale sale) {

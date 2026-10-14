@@ -29,6 +29,11 @@ import SalesPage from './features/sales/SalesPage'
 import TrainingDetailPage from './features/trainings/TrainingDetailPage'
 import TrainingsPage from './features/trainings/TrainingsPage'
 import UsersPage from './features/users/UsersPage'
+import ClientQuotePage from './features/quotes/ClientQuotePage'
+import ClientRepairPage from './features/quotes/ClientRepairPage'
+import NewQuotePage from './features/quotes/NewQuotePage'
+import QuoteDetailPage from './features/quotes/QuoteDetailPage'
+import QuotesPage from './features/quotes/QuotesPage'
 import CartPage from './features/shop/CartPage'
 import ClientOrderPage from './features/shop/ClientOrderPage'
 import OrderDetailPage from './features/shop/OrderDetailPage'
@@ -69,6 +74,9 @@ export default function App() {
         <Route path="panier" element={<CartPage />} />
         <Route path="mon-espace" element={only(['CLIENT'], <ClientSpacePage />)} />
         <Route path="mon-espace/commandes/:id" element={only(['CLIENT'], <ClientOrderPage />)} />
+        <Route path="mon-espace/devis/nouveau" element={only(['CLIENT'], <NewQuotePage />)} />
+        <Route path="mon-espace/devis/:id" element={only(['CLIENT'], <ClientQuotePage />)} />
+        <Route path="mon-espace/reparations/:id" element={only(['CLIENT'], <ClientRepairPage />)} />
       </Route>
 
       {/* Espace de gestion : reserve au personnel de la boutique */}
@@ -81,6 +89,8 @@ export default function App() {
         <Route path="reparations" element={only(REPAIR_ROLES, <RepairsPage />)} />
         <Route path="reparations/nouvelle" element={only(REPAIR_ROLES, <NewRepairPage />)} />
         <Route path="reparations/:id" element={only(REPAIR_ROLES, <RepairDetailPage />)} />
+        <Route path="devis" element={only(REPAIR_ROLES, <QuotesPage />)} />
+        <Route path="devis/:id" element={only(REPAIR_ROLES, <QuoteDetailPage />)} />
         <Route path="formations" element={only(TRAINING_ROLES, <TrainingsPage />)} />
         <Route path="formations/:id" element={only(TRAINING_ROLES, <TrainingDetailPage />)} />
         <Route path="clients" element={<CustomersPage />} />

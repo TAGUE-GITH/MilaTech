@@ -1,7 +1,7 @@
 import { screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { vi } from 'vitest'
-import { catalogApi, ordersApi, productsApi } from '../api/client'
+import { catalogApi, ordersApi, productsApi, quotesApi } from '../api/client'
 import type { Product, Role } from '../api/types'
 import { useAuth } from '../auth/AuthProvider'
 import Layout from '../components/Layout'
@@ -14,6 +14,7 @@ vi.mock('../api/client', async (importOriginal) => ({
   catalogApi: { categories: vi.fn(), suppliers: vi.fn() },
   productsApi: { list: vi.fn(), get: vi.fn(), purchase: vi.fn(), adjust: vi.fn(), movements: vi.fn(), alerts: vi.fn(), setImage: vi.fn(), removeImage: vi.fn() },
   ordersApi: { list: vi.fn() },
+  quotesApi: { list: vi.fn() },
 }))
 vi.mock('../auth/AuthProvider', () => ({ useAuth: vi.fn() }))
 
@@ -48,6 +49,7 @@ beforeEach(() => {
   vi.mocked(catalogApi.suppliers).mockResolvedValue([])
   vi.mocked(productsApi.movements).mockResolvedValue([])
   vi.mocked(ordersApi.list).mockResolvedValue([])
+  vi.mocked(quotesApi.list).mockResolvedValue([])
 })
 
 describe('Menu selon le role (US-02)', () => {
@@ -56,13 +58,13 @@ describe('Menu selon le role (US-02)', () => {
   it('montre tout au gerant', () => {
     loggedAs('GERANT')
     renderPage(<Layout />)
-    expect(menu()).toEqual(['Accueil', 'Caisse', 'Ventes', 'Commandes en ligne', 'Réparations', 'Formations', 'Clients', 'Produits et stock', 'Stock bas', 'Catégories et fournisseurs', 'Messages', 'Employés', 'Voir le site'])
+    expect(menu()).toEqual(['Accueil', 'Caisse', 'Ventes', 'Commandes en ligne', 'Réparations', 'Demandes de devis', 'Formations', 'Clients', 'Produits et stock', 'Stock bas', 'Catégories et fournisseurs', 'Messages', 'Employés', 'Voir le site'])
   })
 
   it('cache la gestion au technicien', () => {
     loggedAs('TECHNICIEN')
     renderPage(<Layout />)
-    expect(menu()).toEqual(['Accueil', 'Réparations', 'Clients', 'Produits et stock', 'Voir le site'])
+    expect(menu()).toEqual(['Accueil', 'Réparations', 'Demandes de devis', 'Clients', 'Produits et stock', 'Voir le site'])
   })
 })
 

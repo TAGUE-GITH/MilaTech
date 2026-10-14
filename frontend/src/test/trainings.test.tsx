@@ -100,6 +100,7 @@ describe('Tableau de bord (US-24)', () => {
       amountsDue: { repairs: 15000, trainings: 30000 },
       recent: [{ type: 'VENTE', label: 'Vente VTE-2026-00012', detail: '15 000 FCFA · Awa Ngono', targetId: 12, at: '2026-10-14T10:00:00Z' }],
       ordersToProcess: 2,
+      quotesToAnswer: 1,
     }
     vi.mocked(dashboardApi.get).mockResolvedValue(dashboard)
     renderPage(<DashboardPage />)
@@ -110,6 +111,7 @@ describe('Tableau de bord (US-24)', () => {
     expect(screen.getByText('À encaisser').closest('a')).toHaveTextContent('45 000 FCFA')
     expect(screen.getByText('Commandes en ligne').closest('a')).toHaveAttribute('href', '/commandes')
     expect(screen.getByText('Commandes en ligne').closest('a')).toHaveTextContent('2')
+    expect(screen.getByText('Demandes de devis').closest('a')).toHaveAttribute('href', '/devis')
     expect(screen.getByRole('list', { name: 'Chiffre d’affaires par jour' }).children).toHaveLength(7)
     expect(screen.getByText('Épuisé')).toBeInTheDocument()
     expect(screen.getByRole('link', { name: /Vente VTE-2026-00012/ })).toHaveAttribute('href', '/ventes/12')

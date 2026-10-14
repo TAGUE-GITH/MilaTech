@@ -308,6 +308,7 @@ export type Dashboard = {
   amountsDue: { repairs: number; trainings: number }
   recent: { type: 'VENTE' | 'REPARATION' | 'INSCRIPTION'; label: string; detail: string; targetId: number; at: string }[]
   ordersToProcess: number
+  quotesToAnswer: number
 }
 
 export type ContactMessage = {
@@ -388,4 +389,77 @@ export type OrderForm = {
   phone: string
   note: string
   lines: { productId: number; quantity: number }[]
+}
+
+export type QuoteStatus = 'NOUVELLE' | 'DEVIS_ENVOYE' | 'ACCEPTEE' | 'REFUSEE' | 'ANNULEE' | 'DEPOSEE'
+
+export type Quote = {
+  id: number
+  reference: string
+  status: QuoteStatus
+  statusLabel: string
+  deviceType: DeviceType
+  brand?: string
+  model?: string
+  device: string
+  issue: string
+  imageUrl?: string
+  quotedPrice?: number
+  quoteMessage?: string
+  /** Seulement pour la boutique */
+  quotedBy?: string
+  quotedAt?: string
+  answeredAt?: string
+  repairId?: number
+  repairReference?: string
+  customer: { id: number; fullName: string; phone: string }
+  createdAt: string
+}
+
+export type QuoteSummary = {
+  id: number
+  reference: string
+  customer: string
+  customerPhone: string
+  device: string
+  deviceType: DeviceType
+  status: QuoteStatus
+  statusLabel: string
+  quotedPrice?: number
+  createdAt: string
+}
+
+export type QuoteForm = { deviceType: DeviceType; brand: string; model: string; issue: string; photo: string }
+
+export type DepositForm = {
+  serialNumber: string
+  accessories: string
+  promisedOn: string
+  deposit: number | ''
+  depositMethod: PaymentMethod
+}
+
+/** Reparation vue par le client (sans notes internes ni noms des employes) */
+export type ClientRepairSummary = {
+  id: number
+  reference: string
+  device: string
+  deviceType: DeviceType
+  status: RepairStatus
+  statusLabel: string
+  total: number
+  balance: number
+  promisedOn: string | null
+  receivedAt: string
+}
+
+export type ClientRepair = ClientRepairSummary & {
+  reportedIssue: string
+  diagnosis?: string
+  estimatedCost?: number
+  laborCost: number
+  paid: number
+  returnedAt?: string
+  parts: { productName: string; quantity: number; lineTotal: number }[]
+  steps: { status: RepairStatus; label: string; at: string }[]
 }

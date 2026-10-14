@@ -32,10 +32,11 @@ const SERVICES: Service[] = [
 ]
 
 const STEPS = [
+  { title: 'Devis', text: 'Décrivez la panne en ligne (avec une photo) : nous vous envoyons un prix dans votre espace.' },
   { title: 'Déposez', text: 'Vous apportez l’appareil, nous notons la panne et vous remettons un bon de dépôt.' },
   { title: 'Diagnostic', text: 'Nous trouvons la cause et vous donnons le prix avant toute réparation.' },
   { title: 'Réparation', text: 'Avec votre accord, nous réparons avec des pièces de qualité.' },
-  { title: 'Récupérez', text: 'Nous vous prévenons sur WhatsApp dès que l’appareil est prêt.' },
+  { title: 'Récupérez', text: 'Suivez la réparation dans votre espace ; nous vous prévenons sur WhatsApp dès que l’appareil est prêt.' },
 ]
 
 // Page d'accueil publique : la vitrine de MilaTech
@@ -59,7 +60,7 @@ export default function PublicHomePage() {
                 Voir la boutique
                 <ArrowRight className="size-4" aria-hidden />
               </Link>
-              <Link to="/contact" className="inline-flex items-center gap-2 rounded-xl px-6 py-3 text-base font-semibold text-white ring-1 ring-white/60 hover:bg-white/10">
+              <Link to="/mon-espace/devis/nouveau" className="inline-flex items-center gap-2 rounded-xl px-6 py-3 text-base font-semibold text-white ring-1 ring-white/60 hover:bg-white/10">
                 Demander un devis
               </Link>
               <a
@@ -111,7 +112,7 @@ export default function PublicHomePage() {
       <section className="bg-slate-50">
         <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
           <h2 className="text-center text-3xl font-extrabold tracking-tight">Une réparation, comment ça se passe ?</h2>
-          <ol className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          <ol className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-5">
             {STEPS.map((step, index) => (
               <li key={step.title} className="rounded-2xl bg-white p-6 ring-1 ring-slate-200">
                 <span className="flex size-9 items-center justify-center rounded-full bg-brand-700 font-bold text-white">{index + 1}</span>

@@ -2,6 +2,7 @@ import {
   AlertTriangle,
   CircuitBoard,
   Contact,
+  FileText,
   FolderTree,
   Globe,
   GraduationCap,
@@ -21,13 +22,13 @@ import type { LucideIcon } from 'lucide-react'
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { Link, NavLink, Outlet } from 'react-router-dom'
-import { ordersApi } from '../api/client'
+import { ordersApi, quotesApi } from '../api/client'
 import { ROLE_LABELS } from '../api/types'
 import type { Role } from '../api/types'
 import { useAuth } from '../auth/AuthProvider'
 import { Avatar } from './Avatar'
 
-type NavItem = { to: string; label: string; Icon: LucideIcon; roles?: Role[]; badge?: 'newOrders' }
+type NavItem = { to: string; label: string; Icon: LucideIcon; roles?: Role[]; badge?: 'newOrders' | 'newQuotes' }
 
 // Menus visibles selon le role (le serveur verifie aussi chaque droit)
 const NAV: NavItem[] = [
@@ -36,6 +37,7 @@ const NAV: NavItem[] = [
   { to: '/ventes', label: 'Ventes', Icon: Receipt, roles: ['GERANT', 'VENDEUR'] },
   { to: '/commandes', label: 'Commandes en ligne', Icon: ShoppingBag, roles: ['GERANT', 'VENDEUR'], badge: 'newOrders' },
   { to: '/reparations', label: 'Réparations', Icon: Wrench, roles: ['GERANT', 'TECHNICIEN', 'VENDEUR'] },
+  { to: '/devis', label: 'Demandes de devis', Icon: FileText, roles: ['GERANT', 'TECHNICIEN', 'VENDEUR'], badge: 'newQuotes' },
   { to: '/formations', label: 'Formations', Icon: GraduationCap, roles: ['GERANT', 'FORMATEUR', 'VENDEUR'] },
   { to: '/clients', label: 'Clients', Icon: Contact },
   { to: '/produits', label: 'Produits et stock', Icon: Package },
@@ -59,15 +61,25 @@ function Logo() {
   )
 }
 
+function CountBadge({ count }: { count: number }) {
+  if (!count) return null
+  return (
+    <span className="ml-auto rounded-full bg-amber-500 px-2 py-0.5 text-xs font-bold text-white" aria-label={`${count} nouvelle(s)`}>
+      {count}
+    </span>
+  )
+}
+
 /** Nombre de nouvelles commandes a confirmer, verifie chaque minute. */
 function NewOrdersBadge() {
   const { data } = useQuery({ queryKey: ['orders', 'EN_ATTENTE'], queryFn: () => ordersApi.list({ status: 'EN_ATTENTE' }), refetchInterval: 60_000 })
-  if (!data?.length) return null
-  return (
-    <span className="ml-auto rounded-full bg-amber-500 px-2 py-0.5 text-xs font-bold text-white" aria-label={`${data.length} nouvelle(s)`}>
-      {data.length}
-    </span>
-  )
+  return <CountBadge count={data?.length ?? 0} />
+}
+
+/** Nombre de demandes de devis qui attendent un prix, verifie chaque minute. */
+function NewQuotesBadge() {
+  const { data } = useQuery({ queryKey: ['quotes', true], queryFn: () => quotesApi.list(true), refetchInterval: 60_000 })
+  return <CountBadge count={data?.filter((quote) => quote.status === 'NOUVELLE').length ?? 0} />
 }
 
 function Navigation({ onNavigate }: { onNavigate?: () => void }) {
@@ -90,6 +102,7 @@ function Navigation({ onNavigate }: { onNavigate?: () => void }) {
           <Icon className="size-5" aria-hidden />
           {label}
           {badge === 'newOrders' && <NewOrdersBadge />}
+          {badge === 'newQuotes' && <NewQuotesBadge />}
         </NavLink>
       ))}
     </nav>

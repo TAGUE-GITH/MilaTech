@@ -3,10 +3,13 @@ import type {
   Category,
   ContactForm,
   ContactMessage,
+  ClientRepair,
+  ClientRepairSummary,
   Customer,
   CustomerDetail,
   CustomerForm,
   Dashboard,
+  DepositForm,
   Enrollment,
   EnrollmentStatus,
   NewRepair,
@@ -18,6 +21,9 @@ import type {
   PaymentMethod,
   RegisterForm,
   PeriodTotals,
+  Quote,
+  QuoteForm,
+  QuoteSummary,
   Product,
   ProductForm,
   Repair,
@@ -244,6 +250,26 @@ export const trainingsApi = {
     data(api.patch<Enrollment>(`/enrollments/${enrollmentId}`, { status })),
   pay: (enrollmentId: number, amount: number, method: PaymentMethod) =>
     data(api.post<Enrollment>(`/enrollments/${enrollmentId}/payments`, { amount, method })),
+}
+
+/** Demandes de devis et reparations du client connecte. */
+export const myQuotesApi = {
+  request: (form: QuoteForm) => data(api.post<Quote>('/me/quotes', clean(form))),
+  list: () => data(api.get<Quote[]>('/me/quotes')),
+  get: (id: number) => data(api.get<Quote>(`/me/quotes/${id}`)),
+  accept: (id: number) => data(api.post<Quote>(`/me/quotes/${id}/accept`, {})),
+  refuse: (id: number) => data(api.post<Quote>(`/me/quotes/${id}/refuse`, {})),
+  cancel: (id: number) => data(api.post<Quote>(`/me/quotes/${id}/cancel`, {})),
+  repairs: () => data(api.get<ClientRepairSummary[]>('/me/repairs')),
+  repair: (id: number) => data(api.get<ClientRepair>(`/me/repairs/${id}`)),
+}
+
+/** Demandes de devis cote boutique. */
+export const quotesApi = {
+  list: (open = false) => data(api.get<QuoteSummary[]>('/quotes', { params: { open } })),
+  get: (id: number) => data(api.get<Quote>(`/quotes/${id}`)),
+  answer: (id: number, price: number, message: string) => data(api.post<Quote>(`/quotes/${id}/answer`, { price, message })),
+  deposit: (id: number, form: DepositForm) => data(api.post<Repair>(`/quotes/${id}/repair`, clean(form))),
 }
 
 export const dashboardApi = {
