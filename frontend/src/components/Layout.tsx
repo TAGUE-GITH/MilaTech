@@ -1,16 +1,34 @@
-import { AlertTriangle, CircuitBoard, Contact, FolderTree, GraduationCap, Home, LogOut, Menu, Package, Receipt, ShoppingCart, Users, Wrench, X } from 'lucide-react'
+import {
+  AlertTriangle,
+  CircuitBoard,
+  Contact,
+  FolderTree,
+  Globe,
+  GraduationCap,
+  Home,
+  LogOut,
+  Mail,
+  Menu,
+  Package,
+  Receipt,
+  ShoppingCart,
+  Users,
+  Wrench,
+  X,
+} from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import { useState } from 'react'
 import { Link, NavLink, Outlet } from 'react-router-dom'
 import { ROLE_LABELS } from '../api/types'
 import type { Role } from '../api/types'
 import { useAuth } from '../auth/AuthProvider'
+import { Avatar } from './Avatar'
 
 type NavItem = { to: string; label: string; Icon: LucideIcon; roles?: Role[] }
 
 // Menus visibles selon le role (le serveur verifie aussi chaque droit)
 const NAV: NavItem[] = [
-  { to: '/', label: 'Accueil', Icon: Home },
+  { to: '/accueil', label: 'Accueil', Icon: Home },
   { to: '/caisse', label: 'Caisse', Icon: ShoppingCart, roles: ['GERANT', 'VENDEUR'] },
   { to: '/ventes', label: 'Ventes', Icon: Receipt, roles: ['GERANT', 'VENDEUR'] },
   { to: '/reparations', label: 'Réparations', Icon: Wrench, roles: ['GERANT', 'TECHNICIEN', 'VENDEUR'] },
@@ -19,12 +37,14 @@ const NAV: NavItem[] = [
   { to: '/produits', label: 'Produits et stock', Icon: Package },
   { to: '/stock/alertes', label: 'Stock bas', Icon: AlertTriangle, roles: ['GERANT', 'VENDEUR'] },
   { to: '/catalogue', label: 'Catégories et fournisseurs', Icon: FolderTree, roles: ['GERANT'] },
+  { to: '/messages', label: 'Messages', Icon: Mail, roles: ['GERANT', 'VENDEUR'] },
   { to: '/employes', label: 'Employés', Icon: Users, roles: ['GERANT'] },
+  { to: '/', label: 'Voir le site', Icon: Globe },
 ]
 
 function Logo() {
   return (
-    <Link to="/" className="flex items-center gap-2.5">
+    <Link to="/accueil" className="flex items-center gap-2.5">
       <span className="flex size-9 items-center justify-center rounded-xl bg-brand-700 text-white">
         <CircuitBoard className="size-5" aria-hidden />
       </span>
@@ -44,7 +64,7 @@ function Navigation({ onNavigate }: { onNavigate?: () => void }) {
         <NavLink
           key={to}
           to={to}
-          end={to === '/'}
+          end={to === '/' || to === '/accueil'}
           onClick={onNavigate}
           className={({ isActive }) =>
             `flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold ${
@@ -65,14 +85,13 @@ function UserBox() {
   if (!user) return null
   return (
     <div className="flex items-center gap-3 border-t border-slate-200 pt-4">
-      <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-slate-200 text-sm font-bold">
-        {user.firstName[0]}
-        {user.lastName[0]}
-      </span>
-      <div className="min-w-0 flex-1">
-        <p className="truncate text-sm font-semibold">{user.fullName}</p>
-        <p className="text-xs text-slate-500">{ROLE_LABELS[user.role]}</p>
-      </div>
+      <Link to="/profil" className="flex min-w-0 flex-1 items-center gap-3 rounded-xl hover:bg-slate-50" title="Mon profil">
+        <Avatar user={user} />
+        <div className="min-w-0 flex-1">
+          <p className="truncate text-sm font-semibold">{user.fullName}</p>
+          <p className="text-xs text-slate-500">{ROLE_LABELS[user.role]}</p>
+        </div>
+      </Link>
       <button
         type="button"
         onClick={logout}

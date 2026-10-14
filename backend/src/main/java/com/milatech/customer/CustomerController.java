@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -34,6 +35,7 @@ import jakarta.validation.constraints.Size;
 /** US-10 : fiches clients, utilisees par tous les employes (ventes, reparations, formations). */
 @RestController
 @RequestMapping("/api/customers")
+@PreAuthorize(Role.STAFF)
 @Transactional
 public class CustomerController {
 

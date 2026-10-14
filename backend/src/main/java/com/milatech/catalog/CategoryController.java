@@ -18,12 +18,14 @@ import org.springframework.web.bind.annotation.RestController;
 import com.milatech.catalog.CatalogDtos.CategoryRequest;
 import com.milatech.catalog.CatalogDtos.CategoryResponse;
 import com.milatech.common.ApiException;
+import com.milatech.user.Role;
 
 import jakarta.validation.Valid;
 
 /** US-04 : categories de produits (lecture pour tous les employes, modification par le gerant). */
 @RestController
 @RequestMapping("/api/categories")
+@PreAuthorize(Role.STAFF)
 public class CategoryController {
 
 	private final CategoryRepository categories;

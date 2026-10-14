@@ -29,6 +29,7 @@ import jakarta.validation.Valid;
  */
 @RestController
 @RequestMapping("/api/products")
+@PreAuthorize(Role.STAFF)
 @Transactional
 public class ProductController {
 

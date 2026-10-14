@@ -2,6 +2,9 @@ package com.milatech.user;
 
 import java.time.Instant;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.milatech.image.Image;
+
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -13,12 +16,15 @@ public final class UserDtos {
 	private UserDtos() {
 	}
 
+	/** avatarUrl et customerId sont absents quand ils n'existent pas. */
+	@JsonInclude(JsonInclude.Include.NON_NULL)
 	public record UserResponse(Long id, String email, String firstName, String lastName, String fullName, String phone,
-			Role role, boolean active, Instant createdAt) {
+			Role role, boolean active, Instant createdAt, String avatarUrl, Long customerId) {
 
 		public static UserResponse of(User user) {
 			return new UserResponse(user.getId(), user.getEmail(), user.getFirstName(), user.getLastName(),
-					user.getFullName(), user.getPhone(), user.getRole(), user.isActive(), user.getCreatedAt());
+					user.getFullName(), user.getPhone(), user.getRole(), user.isActive(), user.getCreatedAt(),
+					Image.url(user.getAvatar()), user.getCustomer() == null ? null : user.getCustomer().getId());
 		}
 	}
 

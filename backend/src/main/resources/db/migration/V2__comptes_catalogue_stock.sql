@@ -7,7 +7,7 @@ CREATE TABLE app_user (
     first_name    VARCHAR(80)  NOT NULL,
     last_name     VARCHAR(80)  NOT NULL,
     phone         VARCHAR(30),
-    role          VARCHAR(20)  NOT NULL CHECK (role IN ('GERANT', 'VENDEUR', 'TECHNICIEN', 'FORMATEUR')),
+    role          VARCHAR(20)  NOT NULL CHECK (role IN ('GERANT', 'VENDEUR', 'TECHNICIEN', 'FORMATEUR', 'CLIENT')),
     active        BOOLEAN      NOT NULL DEFAULT TRUE,
     created_at    TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
 );

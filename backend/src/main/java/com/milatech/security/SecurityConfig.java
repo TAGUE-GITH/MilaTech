@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -37,7 +38,10 @@ public class SecurityConfig {
 				.cors(cors -> cors.configurationSource(corsConfigurationSource()))
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 				.authorizeHttpRequests(auth -> auth
-						.requestMatchers("/api/health", "/api/auth/login", "/error").permitAll()
+						// Site public : inscription des clients, formulaire de contact, images (photos)
+						.requestMatchers("/api/health", "/api/auth/login", "/api/auth/register", "/error").permitAll()
+						.requestMatchers(HttpMethod.POST, "/api/contact").permitAll()
+						.requestMatchers(HttpMethod.GET, "/api/images/*").permitAll()
 						.anyRequest().authenticated())
 				// Sans jeton valide : 401 au lieu d'une page de connexion
 				.exceptionHandling(ex -> ex.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))

@@ -1,23 +1,24 @@
 import { CircuitBoard } from 'lucide-react'
 import { useState } from 'react'
 import type { FormEvent } from 'react'
-import { Navigate, useLocation, useNavigate } from 'react-router-dom'
+import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom'
 import { errorMessage, fieldErrors } from '../../api/client'
-import { useAuth } from '../../auth/AuthProvider'
+import { homeOf, useAuth } from '../../auth/AuthProvider'
 import { Alert, Button, Field } from '../../components/ui'
 
 // US-01 : connexion des employes
 export default function LoginPage() {
   const { user, login } = useAuth()
   const navigate = useNavigate()
-  const from = (useLocation().state as { from?: string } | null)?.from ?? '/'
+  // Page demandee avant la connexion ; sinon l'espace de chacun (gestion pour le personnel, « Mon espace » pour les clients)
+  const from = (useLocation().state as { from?: string } | null)?.from
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [sending, setSending] = useState(false)
 
-  if (user) return <Navigate to={from} replace />
+  if (user) return <Navigate to={from ?? homeOf(user)} replace />
 
   const submit = async (event: FormEvent) => {
     event.preventDefault()
@@ -25,8 +26,8 @@ export default function LoginPage() {
     setError('')
     setErrors({})
     try {
-      await login(email, password)
-      navigate(from, { replace: true })
+      const connected = await login(email, password)
+      navigate(from ?? homeOf(connected), { replace: true })
     } catch (err) {
       setErrors(fieldErrors(err))
       setError(errorMessage(err))
@@ -42,7 +43,7 @@ export default function LoginPage() {
             <CircuitBoard className="size-6" aria-hidden />
           </span>
           <h1 className="mt-4 text-2xl font-extrabold tracking-tight">MilaTech Management</h1>
-          <p className="mt-1 text-sm text-slate-600">Connectez-vous avec votre compte employé.</p>
+          <p className="mt-1 text-sm text-slate-600">Connectez-vous à votre compte.</p>
         </div>
         <form onSubmit={submit} className="space-y-4 rounded-2xl bg-white p-6 ring-1 ring-slate-200" noValidate>
           <Alert>{error}</Alert>
@@ -68,8 +69,17 @@ export default function LoginPage() {
             Se connecter
           </Button>
         </form>
-        <p className="mt-6 text-center text-xs text-slate-500">
-          Pas de compte ? Demandez au gérant de vous en créer un.
+        <p className="mt-6 text-center text-sm text-slate-600">
+          Client sans compte ?{' '}
+          <Link to="/inscription" className="font-semibold text-brand-700">
+            Créer un compte
+          </Link>
+        </p>
+        <p className="mt-2 text-center text-xs text-slate-500">Employé : votre compte est créé par le gérant.</p>
+        <p className="mt-4 text-center text-sm">
+          <Link to="/" className="font-semibold text-slate-600 hover:text-brand-700">
+            ← Retour au site
+          </Link>
         </p>
       </div>
     </main>

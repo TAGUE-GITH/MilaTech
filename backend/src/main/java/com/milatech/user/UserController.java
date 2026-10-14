@@ -39,13 +39,16 @@ public class UserController {
 
 	@GetMapping
 	public List<UserResponse> list() {
-		return users.findAllByOrderByActiveDescLastNameAscFirstNameAsc().stream().map(UserResponse::of).toList();
+		// L'equipe de la boutique, sans les comptes clients du site
+		return users.findAllByOrderByActiveDescLastNameAscFirstNameAsc().stream().filter(u -> u.getRole() != Role.CLIENT)
+				.map(UserResponse::of).toList();
 	}
 
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
 	@Transactional
 	public UserResponse create(@Valid @RequestBody CreateUserRequest request) {
+		refuseClientRole(request.role());
 		if (users.existsByEmailIgnoreCase(request.email().trim()))
 			throw ApiException.conflict("Un compte existe déjà avec cet email.");
 		User user = new User(request.email(), passwordEncoder.encode(request.password()), request.firstName().trim(),
@@ -62,11 +65,17 @@ public class UserController {
 		boolean self = user.getId().equals(current.getId());
 		if (self && (Boolean.FALSE.equals(request.active()) || (request.role() != null && request.role() != Role.GERANT)))
 			throw ApiException.badRequest("Vous ne pouvez pas désactiver votre propre compte ni retirer votre rôle de gérant.");
+		refuseClientRole(request.role());
+		if (user.getRole() == Role.CLIENT) throw ApiException.notFound("Employé introuvable.");
 		if (request.firstName() != null) user.setFirstName(request.firstName().trim());
 		if (request.lastName() != null) user.setLastName(request.lastName().trim());
 		if (request.phone() != null) user.setPhone(request.phone());
 		if (request.role() != null) user.setRole(request.role());
 		if (request.active() != null) user.setActive(request.active());
 		return UserResponse.of(user);
+	}
+
+	private static void refuseClientRole(Role role) {
+		if (role == Role.CLIENT) throw ApiException.badRequest("Les comptes clients se créent depuis le site.");
 	}
 }

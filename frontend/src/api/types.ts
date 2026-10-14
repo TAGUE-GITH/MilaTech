@@ -1,12 +1,16 @@
 // Types des donnees echangees avec l'API Spring Boot
 
-export type Role = 'GERANT' | 'VENDEUR' | 'TECHNICIEN' | 'FORMATEUR'
+export type Role = 'GERANT' | 'VENDEUR' | 'TECHNICIEN' | 'FORMATEUR' | 'CLIENT'
+
+/** Personnel de la boutique (l'espace de gestion), par opposition aux clients du site */
+export const STAFF_ROLES: Role[] = ['GERANT', 'VENDEUR', 'TECHNICIEN', 'FORMATEUR']
 
 export const ROLE_LABELS: Record<Role, string> = {
   GERANT: 'Gérant',
   VENDEUR: 'Vendeur',
   TECHNICIEN: 'Technicien',
   FORMATEUR: 'Formateur',
+  CLIENT: 'Client',
 }
 
 export type User = {
@@ -19,6 +23,8 @@ export type User = {
   role: Role
   active: boolean
   createdAt: string
+  avatarUrl?: string
+  customerId?: number
 }
 
 export type Named = { id: number; name: string }
@@ -290,3 +296,18 @@ export type Dashboard = {
   amountsDue: { repairs: number; trainings: number }
   recent: { type: 'VENTE' | 'REPARATION' | 'INSCRIPTION'; label: string; detail: string; targetId: number; at: string }[]
 }
+
+export type ContactMessage = {
+  id: number
+  name: string
+  phone: string
+  email: string | null
+  subject: string | null
+  message: string
+  handled: boolean
+  createdAt: string
+}
+
+export type ContactForm = { name: string; phone: string; email: string; subject: string; message: string; website: string }
+
+export type RegisterForm = { firstName: string; lastName: string; email: string; phone: string; password: string }

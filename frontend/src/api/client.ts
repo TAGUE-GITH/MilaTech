@@ -1,6 +1,8 @@
 import axios, { AxiosError } from 'axios'
 import type {
   Category,
+  ContactForm,
+  ContactMessage,
   Customer,
   CustomerDetail,
   CustomerForm,
@@ -10,6 +12,7 @@ import type {
   NewRepair,
   NewUser,
   PaymentMethod,
+  RegisterForm,
   PeriodTotals,
   Product,
   ProductForm,
@@ -84,8 +87,27 @@ export const healthApi = {
 export const authApi = {
   login: (email: string, password: string) =>
     data(api.post<{ token: string; user: User }>('/auth/login', { email, password })),
+  register: (form: RegisterForm) => data(api.post<{ token: string; user: User }>('/auth/register', form)),
   me: () => data(api.get<User>('/auth/me')),
 }
+
+/** Espace personnel : informations, mot de passe et photo de chaque utilisateur. */
+export const profileApi = {
+  update: (changes: { firstName: string; lastName: string; phone: string }) => data(api.patch<User>('/me', changes)),
+  changePassword: (currentPassword: string, newPassword: string) =>
+    api.post('/me/password', { currentPassword, newPassword }),
+  setAvatar: (dataUrl: string) => data(api.put<User>('/me/avatar', { dataUrl })),
+  removeAvatar: () => data(api.delete<User>('/me/avatar')),
+}
+
+export const contactApi = {
+  send: (form: ContactForm) => api.post('/contact', form),
+  list: () => data(api.get<ContactMessage[]>('/contact-messages')),
+  setHandled: (id: number, handled: boolean) => data(api.patch<ContactMessage>(`/contact-messages/${id}`, { handled })),
+}
+
+/** Les images sont servies par l'API : en production, son adresse est differente de celle du site. */
+export const imageUrl = (path?: string | null) => (path ? `${API_URL}${path}` : undefined)
 
 export const usersApi = {
   list: () => data(api.get<User[]>('/users')),

@@ -2,13 +2,20 @@ package com.milatech.user;
 
 import java.time.Instant;
 
+import com.milatech.customer.Customer;
+import com.milatech.image.Image;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 /** Employe de MilaTech (le mot de passe est stocke chiffre avec BCrypt). */
@@ -43,6 +50,16 @@ public class User {
 
 	@Column(name = "created_at", nullable = false)
 	private Instant createdAt = Instant.now();
+
+	/** Photo de profil (facultative). */
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "avatar_id")
+	private Image avatar;
+
+	/** Fiche client des comptes CLIENT (ventes, reparations, formations a son nom). */
+	@OneToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "customer_id")
+	private Customer customer;
 
 	protected User() {
 	}
@@ -114,5 +131,25 @@ public class User {
 
 	public Instant getCreatedAt() {
 		return createdAt;
+	}
+
+	public void setPasswordHash(String passwordHash) {
+		this.passwordHash = passwordHash;
+	}
+
+	public Image getAvatar() {
+		return avatar;
+	}
+
+	public void setAvatar(Image avatar) {
+		this.avatar = avatar;
+	}
+
+	public Customer getCustomer() {
+		return customer;
+	}
+
+	public void setCustomer(Customer customer) {
+		this.customer = customer;
 	}
 }
