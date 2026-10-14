@@ -1,0 +1,16 @@
+@import 'tailwindcss';
+
+/* Couleurs de MilaTech : bleu technique, texte ardoise */
+@theme {
+  --color-brand-50: #ecfeff;
+  --color-brand-100: #cffafe;
+  --color-brand-500: #06b6d4;
+  --color-brand-600: #0891b2;
+  --color-brand-700: #0e7490;
+  --color-brand-800: #155e75;
+  --color-ink: #0f172a;
+}
+
+body {
+  @apply bg-slate-50 text-ink antialiased;
+}
