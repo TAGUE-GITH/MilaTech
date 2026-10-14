@@ -3,11 +3,16 @@ import { RequireAuth } from './auth/RequireAuth'
 import Layout from './components/Layout'
 import LoginPage from './features/auth/LoginPage'
 import CatalogPage from './features/catalog/CatalogPage'
+import CustomerDetailPage from './features/customers/CustomerDetailPage'
+import CustomersPage from './features/customers/CustomersPage'
 import HomePage from './features/home/HomePage'
 import AlertsPage from './features/products/AlertsPage'
 import ProductDetailPage from './features/products/ProductDetailPage'
 import ProductFormPage from './features/products/ProductFormPage'
 import ProductsPage from './features/products/ProductsPage'
+import CashRegisterPage from './features/sales/CashRegisterPage'
+import SaleDetailPage from './features/sales/SaleDetailPage'
+import SalesPage from './features/sales/SalesPage'
 import UsersPage from './features/users/UsersPage'
 
 function NotFoundPage() {
@@ -33,6 +38,11 @@ export default function App() {
         }
       >
         <Route index element={<HomePage />} />
+        <Route path="caisse" element={<RequireAuth roles={['GERANT', 'VENDEUR']}><CashRegisterPage /></RequireAuth>} />
+        <Route path="ventes" element={<RequireAuth roles={['GERANT', 'VENDEUR']}><SalesPage /></RequireAuth>} />
+        <Route path="ventes/:id" element={<RequireAuth roles={['GERANT', 'VENDEUR']}><SaleDetailPage /></RequireAuth>} />
+        <Route path="clients" element={<CustomersPage />} />
+        <Route path="clients/:id" element={<CustomerDetailPage />} />
         <Route path="produits" element={<ProductsPage />} />
         <Route path="produits/nouveau" element={<RequireAuth roles={['GERANT']}><ProductFormPage /></RequireAuth>} />
         <Route path="produits/:id" element={<ProductDetailPage />} />

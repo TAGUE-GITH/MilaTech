@@ -11,7 +11,7 @@ type Module = { title: string; text: string; to?: string; sprint?: number; Icon:
 
 const MODULES: Module[] = [
   { title: 'Produits et stock', text: 'Catalogue, achats, inventaire et historique', to: '/produits', Icon: Package },
-  { title: 'Ventes', text: 'Caisse, reçus et historique des ventes', sprint: 2, Icon: ShoppingCart },
+  { title: 'Ventes', text: 'Caisse, reçus et historique des ventes', to: '/caisse', Icon: ShoppingCart },
   { title: 'Réparations', text: 'Dépôt, diagnostic, pièces et restitution', sprint: 3, Icon: Wrench },
   { title: 'Formations', text: 'Sessions, apprenants et paiements', sprint: 4, Icon: GraduationCap },
 ]

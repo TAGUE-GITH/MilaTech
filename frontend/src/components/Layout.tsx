@@ -1,4 +1,4 @@
-import { AlertTriangle, CircuitBoard, FolderTree, Home, LogOut, Menu, Package, Users, X } from 'lucide-react'
+import { AlertTriangle, CircuitBoard, Contact, FolderTree, Home, LogOut, Menu, Package, Receipt, ShoppingCart, Users, X } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import { useState } from 'react'
 import { Link, NavLink, Outlet } from 'react-router-dom'
@@ -11,6 +11,9 @@ type NavItem = { to: string; label: string; Icon: LucideIcon; roles?: Role[] }
 // Menus visibles selon le role (le serveur verifie aussi chaque droit)
 const NAV: NavItem[] = [
   { to: '/', label: 'Accueil', Icon: Home },
+  { to: '/caisse', label: 'Caisse', Icon: ShoppingCart, roles: ['GERANT', 'VENDEUR'] },
+  { to: '/ventes', label: 'Ventes', Icon: Receipt, roles: ['GERANT', 'VENDEUR'] },
+  { to: '/clients', label: 'Clients', Icon: Contact },
   { to: '/produits', label: 'Produits et stock', Icon: Package },
   { to: '/stock/alertes', label: 'Stock bas', Icon: AlertTriangle, roles: ['GERANT', 'VENDEUR'] },
   { to: '/catalogue', label: 'Catégories et fournisseurs', Icon: FolderTree, roles: ['GERANT'] },

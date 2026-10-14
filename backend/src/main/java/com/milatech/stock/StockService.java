@@ -66,8 +66,24 @@ public class StockService {
 	 */
 	@Transactional
 	public List<Product> remove(List<StockLine> lines, MovementType type, String reason, User author) {
-		Map<Long, Integer> wanted = lines.stream()
-				.collect(Collectors.toMap(StockLine::productId, StockLine::quantity, Integer::sum));
+		Map<Long, Integer> wanted = quantities(lines);
+		Map<Long, Product> locked = lockAvailable(lines).stream()
+				.collect(Collectors.toMap(Product::getId, Function.identity()));
+		for (var entry : wanted.entrySet()) {
+			Product product = locked.get(entry.getKey());
+			product.addQuantity(-entry.getValue());
+			movements.save(new StockMovement(product, type, -entry.getValue(), product.getPurchasePrice(), null, reason, author));
+		}
+		return List.copyOf(locked.values());
+	}
+
+	/**
+	 * Verrouille les produits (R3) et verifie que toutes les quantites sont disponibles (R1), sans rien retirer :
+	 * permet de refuser une vente avant meme de l'enregistrer. Le verrou dure jusqu'a la fin de la transaction.
+	 */
+	@Transactional
+	public List<Product> lockAvailable(List<StockLine> lines) {
+		Map<Long, Integer> wanted = quantities(lines);
 		Map<Long, Product> locked = products.findAllByIdForUpdate(List.copyOf(wanted.keySet())).stream()
 				.collect(Collectors.toMap(Product::getId, Function.identity()));
 		for (var entry : wanted.entrySet()) {
@@ -77,12 +93,11 @@ public class StockService {
 				throw ApiException.conflict(
 						"Stock insuffisant : " + product.getName() + " (reste " + product.getQuantity() + ").");
 		}
-		for (var entry : wanted.entrySet()) {
-			Product product = locked.get(entry.getKey());
-			product.addQuantity(-entry.getValue());
-			movements.save(new StockMovement(product, type, -entry.getValue(), product.getPurchasePrice(), null, reason, author));
-		}
 		return List.copyOf(locked.values());
+	}
+
+	private static Map<Long, Integer> quantities(List<StockLine> lines) {
+		return lines.stream().collect(Collectors.toMap(StockLine::productId, StockLine::quantity, Integer::sum));
 	}
 
 	/** Remise en stock (piece retiree d'une reparation, annulation). */

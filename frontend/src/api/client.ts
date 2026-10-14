@@ -1,5 +1,20 @@
 import axios, { AxiosError } from 'axios'
-import type { Category, NewUser, Product, ProductForm, StockMovement, Supplier, User } from './types'
+import type {
+  Category,
+  Customer,
+  CustomerDetail,
+  CustomerForm,
+  NewUser,
+  PaymentMethod,
+  PeriodTotals,
+  Product,
+  ProductForm,
+  Sale,
+  SaleSummary,
+  StockMovement,
+  Supplier,
+  User,
+} from './types'
 
 // En developpement VITE_API_URL est vide : Vite transmet /api au backend (voir vite.config.ts)
 export const API_URL: string = import.meta.env.VITE_API_URL ?? ''
@@ -92,4 +107,29 @@ export const productsApi = {
     data(api.post<Product>(`/products/${id}/adjustments`, body)),
   movements: (id: number) => data(api.get<StockMovement[]>(`/products/${id}/movements`)),
   alerts: () => data(api.get<Product[]>('/stock/alerts')),
+}
+
+export const customersApi = {
+  search: (q = '') => data(api.get<Customer[]>('/customers', { params: { q } })),
+  get: (id: number) => data(api.get<CustomerDetail>(`/customers/${id}`)),
+  save: (form: CustomerForm, id?: number) =>
+    data(id ? api.put<Customer>(`/customers/${id}`, clean(form)) : api.post<Customer>('/customers', clean(form))),
+}
+
+export type Period = { from?: string; to?: string }
+
+export const salesApi = {
+  sell: (body: { customerId: number | null; paymentMethod: PaymentMethod; lines: { productId: number; quantity: number }[] }) =>
+    data(api.post<Sale>('/sales', body)),
+  list: (period: Period) => data(api.get<SaleSummary[]>('/sales', { params: period })),
+  summary: (period: Period) => data(api.get<PeriodTotals>('/sales/summary', { params: period })),
+  get: (id: number) => data(api.get<Sale>(`/sales/${id}`)),
+  /** Le recu est protege par le jeton : on le telecharge puis on l'ouvre dans un nouvel onglet. */
+  openReceipt: async (id: number) => {
+    const tab = window.open('', '_blank')
+    const response = await api.get<Blob>(`/sales/${id}/receipt`, { responseType: 'blob' })
+    const url = URL.createObjectURL(response.data)
+    if (tab) tab.location.href = url
+    else window.location.href = url
+  },
 }

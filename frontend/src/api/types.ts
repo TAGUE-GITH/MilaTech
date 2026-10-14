@@ -93,3 +93,49 @@ export type NewUser = {
   role: Role
   password: string
 }
+
+export type Customer = {
+  id: number
+  fullName: string
+  phone: string
+  email: string | null
+  notes: string | null
+  createdAt: string
+}
+
+export type CustomerForm = { fullName: string; phone: string; email: string; notes: string }
+
+export type PaymentMethod = 'ESPECES' | 'MOBILE_MONEY'
+
+export const PAYMENT_LABELS: Record<PaymentMethod, string> = {
+  ESPECES: 'Espèces',
+  MOBILE_MONEY: 'Mobile Money',
+}
+
+export type SaleSummary = {
+  id: number
+  reference: string
+  customer?: string
+  seller: string
+  paymentMethod: PaymentMethod
+  total: number
+  /** Seulement pour le gerant */
+  margin?: number
+  createdAt: string
+}
+
+export type SaleLine = {
+  productId: number
+  productName: string
+  productReference: string
+  quantity: number
+  unitPrice: number
+  lineTotal: number
+  unitCost?: number
+}
+
+export type Sale = Omit<SaleSummary, 'customer'> & { customer?: Named; lines: SaleLine[] }
+
+export type CustomerDetail = { customer: Customer; sales: SaleSummary[]; totalSpent: number }
+
+export type PeriodTotals = { count: number; total: number; margin: number }
