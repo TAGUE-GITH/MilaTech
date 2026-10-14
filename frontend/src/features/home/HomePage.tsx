@@ -4,16 +4,18 @@ import type { LucideIcon } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { productsApi } from '../../api/client'
 import { ROLE_LABELS } from '../../api/types'
+import type { Role } from '../../api/types'
 import { useAuth } from '../../auth/AuthProvider'
 import { Card } from '../../components/ui'
+import DashboardPage from '../dashboard/DashboardPage'
 
-type Module = { title: string; text: string; to?: string; sprint?: number; Icon: LucideIcon }
+type Module = { title: string; text: string; to: string; roles: Role[]; Icon: LucideIcon }
 
 const MODULES: Module[] = [
-  { title: 'Produits et stock', text: 'Catalogue, achats, inventaire et historique', to: '/produits', Icon: Package },
-  { title: 'Ventes', text: 'Caisse, reçus et historique des ventes', to: '/caisse', Icon: ShoppingCart },
-  { title: 'Réparations', text: 'Dépôt, diagnostic, pièces et restitution', to: '/reparations', Icon: Wrench },
-  { title: 'Formations', text: 'Sessions, apprenants et paiements', sprint: 4, Icon: GraduationCap },
+  { title: 'Produits et stock', text: 'Catalogue, achats, inventaire et historique', to: '/produits', roles: ['VENDEUR', 'TECHNICIEN', 'FORMATEUR'], Icon: Package },
+  { title: 'Ventes', text: 'Caisse, reçus et historique des ventes', to: '/caisse', roles: ['VENDEUR'], Icon: ShoppingCart },
+  { title: 'Réparations', text: 'Dépôt, diagnostic, pièces et restitution', to: '/reparations', roles: ['VENDEUR', 'TECHNICIEN'], Icon: Wrench },
+  { title: 'Formations', text: 'Sessions, apprenants et paiements', to: '/formations', roles: ['VENDEUR', 'FORMATEUR'], Icon: GraduationCap },
 ]
 
 function LowStockCard() {
@@ -41,28 +43,36 @@ export default function HomePage() {
       <h1 className="text-2xl font-extrabold tracking-tight sm:text-3xl">Bonjour {user?.firstName} 👋</h1>
       <p className="mt-1 text-slate-600">{user && ROLE_LABELS[user.role]} · MilaTech Management</p>
 
-      {hasRole('GERANT', 'VENDEUR') && (
+      {/* Le gerant arrive directement sur son tableau de bord (US-24) */}
+      {hasRole('GERANT') && (
+        <div className="mt-6">
+          <DashboardPage />
+        </div>
+      )}
+
+      {hasRole('VENDEUR') && (
         <div className="mt-6 max-w-sm">
           <LowStockCard />
         </div>
       )}
 
+      {/* Les autres employes voient les modules de leur role */}
       <ul className="mt-8 grid gap-4 sm:grid-cols-2">
-        {MODULES.map(({ title, text, to, sprint, Icon }) => {
-          const content = (
-            <Card className={`flex h-full gap-4 ${to ? 'transition hover:shadow-md' : 'opacity-75'}`}>
-              <span className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-brand-50 text-brand-700">
-                <Icon className="size-5" aria-hidden />
-              </span>
-              <div>
-                <h2 className="font-bold">{title}</h2>
-                <p className="text-sm text-slate-600">{text}</p>
-                {sprint && <p className="mt-2 text-xs font-semibold text-slate-500 uppercase">Bientôt · sprint {sprint}</p>}
-              </div>
-            </Card>
-          )
-          return <li key={title}>{to ? <Link to={to}>{content}</Link> : content}</li>
-        })}
+        {MODULES.filter((module) => hasRole(...module.roles)).map(({ title, text, to, Icon }) => (
+          <li key={title}>
+            <Link to={to}>
+              <Card className="flex h-full gap-4 transition hover:shadow-md">
+                <span className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-brand-50 text-brand-700">
+                  <Icon className="size-5" aria-hidden />
+                </span>
+                <div>
+                  <h2 className="font-bold">{title}</h2>
+                  <p className="text-sm text-slate-600">{text}</p>
+                </div>
+              </Card>
+            </Link>
+          </li>
+        ))}
       </ul>
     </>
   )

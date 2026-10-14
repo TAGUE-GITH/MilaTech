@@ -15,12 +15,16 @@ import NewRepairPage from './features/repairs/NewRepairPage'
 import RepairDetailPage from './features/repairs/RepairDetailPage'
 import RepairsPage from './features/repairs/RepairsPage'
 import CashRegisterPage from './features/sales/CashRegisterPage'
+import TrainingDetailPage from './features/trainings/TrainingDetailPage'
+import TrainingsPage from './features/trainings/TrainingsPage'
 import SaleDetailPage from './features/sales/SaleDetailPage'
 import SalesPage from './features/sales/SalesPage'
 import UsersPage from './features/users/UsersPage'
 
 // Les formateurs n'ont pas acces aux reparations
 const REPAIR_ROLES: Role[] = ['GERANT', 'TECHNICIEN', 'VENDEUR']
+// Les techniciens n'ont pas acces aux formations
+const TRAINING_ROLES: Role[] = ['GERANT', 'FORMATEUR', 'VENDEUR']
 
 function NotFoundPage() {
   return (
@@ -51,6 +55,8 @@ export default function App() {
         <Route path="reparations" element={<RequireAuth roles={REPAIR_ROLES}><RepairsPage /></RequireAuth>} />
         <Route path="reparations/nouvelle" element={<RequireAuth roles={REPAIR_ROLES}><NewRepairPage /></RequireAuth>} />
         <Route path="reparations/:id" element={<RequireAuth roles={REPAIR_ROLES}><RepairDetailPage /></RequireAuth>} />
+        <Route path="formations" element={<RequireAuth roles={TRAINING_ROLES}><TrainingsPage /></RequireAuth>} />
+        <Route path="formations/:id" element={<RequireAuth roles={TRAINING_ROLES}><TrainingDetailPage /></RequireAuth>} />
         <Route path="clients" element={<CustomersPage />} />
         <Route path="clients/:id" element={<CustomerDetailPage />} />
         <Route path="produits" element={<ProductsPage />} />

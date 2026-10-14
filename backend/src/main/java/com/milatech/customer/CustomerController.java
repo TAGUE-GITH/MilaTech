@@ -21,6 +21,8 @@ import com.milatech.repair.RepairDtos.RepairSummary;
 import com.milatech.repair.RepairRepository;
 import com.milatech.sale.SaleDtos.SaleSummary;
 import com.milatech.sale.SaleRepository;
+import com.milatech.training.EnrollmentRepository;
+import com.milatech.training.TrainingDtos.EnrollmentResponse;
 import com.milatech.user.Role;
 import com.milatech.user.User;
 
@@ -49,19 +51,22 @@ public class CustomerController {
 		}
 	}
 
-	/** Fiche complete : coordonnees et historique (achats, reparations ; formations au sprint 4). */
+	/** Fiche complete : coordonnees et historique (achats, reparations, formations). */
 	public record CustomerDetail(CustomerResponse customer, List<SaleSummary> sales, long totalSpent,
-			List<RepairSummary> repairs) {
+			List<RepairSummary> repairs, List<EnrollmentResponse> enrollments) {
 	}
 
 	private final CustomerRepository customers;
 	private final SaleRepository sales;
 	private final RepairRepository repairs;
+	private final EnrollmentRepository enrollments;
 
-	public CustomerController(CustomerRepository customers, SaleRepository sales, RepairRepository repairs) {
+	public CustomerController(CustomerRepository customers, SaleRepository sales, RepairRepository repairs,
+			EnrollmentRepository enrollments) {
 		this.customers = customers;
 		this.sales = sales;
 		this.repairs = repairs;
+		this.enrollments = enrollments;
 	}
 
 	@GetMapping
@@ -93,7 +98,8 @@ public class CustomerController {
 		return new CustomerDetail(CustomerResponse.of(customer),
 				history.stream().map(sale -> SaleSummary.of(sale, manager)).toList(),
 				history.stream().mapToLong(sale -> sale.getTotal()).sum(),
-				repairs.findByCustomer(id).stream().map(RepairSummary::of).toList());
+				repairs.findByCustomer(id).stream().map(RepairSummary::of).toList(),
+				enrollments.findByCustomerIdOrderByEnrolledAtDesc(id).stream().map(EnrollmentResponse::of).toList());
 	}
 
 	private Customer find(Long id) {

@@ -136,7 +136,13 @@ export type SaleLine = {
 
 export type Sale = Omit<SaleSummary, 'customer'> & { customer?: Named; lines: SaleLine[] }
 
-export type CustomerDetail = { customer: Customer; sales: SaleSummary[]; totalSpent: number; repairs: RepairSummary[] }
+export type CustomerDetail = {
+  customer: Customer
+  sales: SaleSummary[]
+  totalSpent: number
+  repairs: RepairSummary[]
+  enrollments: Enrollment[]
+}
 
 export type PeriodTotals = { count: number; total: number; margin: number }
 
@@ -223,4 +229,64 @@ export type NewRepair = {
   promisedOn: string
   deposit: number | ''
   depositMethod: PaymentMethod
+}
+
+export type EnrollmentStatus = 'INSCRIT' | 'TERMINE' | 'ABANDON'
+
+export const ENROLLMENT_LABELS: Record<EnrollmentStatus, string> = {
+  INSCRIT: 'Inscrit',
+  TERMINE: 'Terminé',
+  ABANDON: 'Abandon',
+}
+
+export type Enrollment = {
+  id: number
+  reference: string
+  trainingId: number
+  training: string
+  customerId: number
+  customer: string
+  phone: string
+  agreedFee: number
+  paid: number
+  balance: number
+  status: EnrollmentStatus
+  enrolledAt: string
+  payments: { id: number; amount: number; method: PaymentMethod; receivedBy: string; paidAt: string }[]
+}
+
+export type TrainingSummary = {
+  id: number
+  title: string
+  startDate: string
+  endDate: string
+  fee: number
+  capacity: number
+  enrolled: number
+  seatsLeft: number
+  balanceDue: number
+  trainer: string | null
+}
+
+export type Training = TrainingSummary & { description: string | null; enrollments: Enrollment[] }
+
+export type TrainingForm = {
+  title: string
+  description: string
+  startDate: string
+  endDate: string
+  fee: number | ''
+  capacity: number | ''
+}
+
+export type Dashboard = {
+  salesToday: { count: number; total: number; margin: number }
+  salesMonth: { count: number; total: number; margin: number }
+  dailySales: { date: string; total: number }[]
+  lowStock: { id: number; name: string; quantity: number; alertThreshold: number }[]
+  lowStockCount: number
+  repairsInProgress: number
+  repairsReady: RepairSummary[]
+  amountsDue: { repairs: number; trainings: number }
+  recent: { type: 'VENTE' | 'REPARATION' | 'INSCRIPTION'; label: string; detail: string; targetId: number; at: string }[]
 }

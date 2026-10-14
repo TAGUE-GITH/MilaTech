@@ -3,6 +3,7 @@ package com.milatech.payment;
 import java.time.Instant;
 
 import com.milatech.repair.Repair;
+import com.milatech.training.Enrollment;
 import com.milatech.user.User;
 
 import jakarta.persistence.Column;
@@ -16,7 +17,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 
-/** Paiement (acompte ou solde) d'une reparation ; les formations s'y ajouteront au sprint 4. */
+/** Paiement (acompte ou solde) d'une reparation ou d'une inscription a une formation (jamais les deux). */
 @Entity
 public class Payment {
 
@@ -32,6 +33,10 @@ public class Payment {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "repair_id")
 	private Repair repair;
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "enrollment_id")
+	private Enrollment enrollment;
 
 	@Column(nullable = false)
 	private long amount;
@@ -52,6 +57,13 @@ public class Payment {
 
 	public Payment(Repair repair, long amount, Method method, User receivedBy) {
 		this.repair = repair;
+		this.amount = amount;
+		this.method = method;
+		this.receivedBy = receivedBy;
+	}
+
+	public Payment(Enrollment enrollment, long amount, Method method, User receivedBy) {
+		this.enrollment = enrollment;
 		this.amount = amount;
 		this.method = method;
 		this.receivedBy = receivedBy;

@@ -19,4 +19,6 @@ public interface SaleRepository extends JpaRepository<Sale, Long> {
 
 	@Query("select s from Sale s join fetch s.seller where s.customer.id = :customerId order by s.createdAt desc, s.id desc")
 	List<Sale> findByCustomer(@Param("customerId") Long customerId);
+
+	List<Sale> findTop8ByOrderByCreatedAtDescIdDesc();
 }

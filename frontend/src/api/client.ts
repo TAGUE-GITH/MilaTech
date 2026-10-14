@@ -4,6 +4,9 @@ import type {
   Customer,
   CustomerDetail,
   CustomerForm,
+  Dashboard,
+  Enrollment,
+  EnrollmentStatus,
   NewRepair,
   NewUser,
   PaymentMethod,
@@ -17,6 +20,9 @@ import type {
   SaleSummary,
   StockMovement,
   Supplier,
+  Training,
+  TrainingForm,
+  TrainingSummary,
   User,
 } from './types'
 
@@ -162,4 +168,28 @@ export const repairsApi = {
   pay: (id: number, amount: number, method: PaymentMethod) =>
     data(api.post<Repair>(`/repairs/${id}/payments`, { amount, method })),
   openSlip: (id: number) => openPdf(`/repairs/${id}/slip`),
+}
+
+export type EnrollmentForm = {
+  customerId: number
+  agreedFee?: number
+  firstPayment?: number
+  paymentMethod?: PaymentMethod
+}
+
+export const trainingsApi = {
+  list: () => data(api.get<TrainingSummary[]>('/trainings')),
+  get: (id: number) => data(api.get<Training>(`/trainings/${id}`)),
+  save: (form: TrainingForm, id?: number) =>
+    data(id ? api.put<Training>(`/trainings/${id}`, clean(form)) : api.post<Training>('/trainings', clean(form))),
+  enroll: (trainingId: number, form: EnrollmentForm) =>
+    data(api.post<Enrollment>(`/trainings/${trainingId}/enrollments`, form)),
+  setStatus: (enrollmentId: number, status: EnrollmentStatus) =>
+    data(api.patch<Enrollment>(`/enrollments/${enrollmentId}`, { status })),
+  pay: (enrollmentId: number, amount: number, method: PaymentMethod) =>
+    data(api.post<Enrollment>(`/enrollments/${enrollmentId}/payments`, { amount, method })),
+}
+
+export const dashboardApi = {
+  get: () => data(api.get<Dashboard>('/dashboard')),
 }

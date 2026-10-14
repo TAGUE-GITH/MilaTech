@@ -52,6 +52,10 @@ public class RepairEvent {
 		this.author = author;
 	}
 
+	public Repair getRepair() {
+		return repair;
+	}
+
 	public RepairStatus getStatus() {
 		return status;
 	}

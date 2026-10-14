@@ -10,7 +10,7 @@
 ![Docker](https://img.shields.io/badge/Docker-compose-2496ED?logo=docker&logoColor=white)
 ![CI](https://github.com/TAGUE-GITH/MilaTech/actions/workflows/ci.yml/badge.svg)
 
-> **État du projet :** Sprint 3 terminé (réparations : dépôt, bon PDF, diagnostic, pièces, paiements, WhatsApp). Prochain sprint : formations et tableau de bord.
+> **État du projet :** Sprint 4 terminé (formations et tableau de bord). Prochain sprint : finitions, démonstration et mise en ligne.
 
 ## Le besoin
 
@@ -45,7 +45,7 @@ MilaTech gère aujourd'hui ses activités au cahier et sur WhatsApp : stock ince
 | 1 | Comptes et rôles, catalogue, stock | ✅ |
 | 2 | Clients et ventes | ✅ |
 | 3 | Réparations | ✅ |
-| 4 | Formations et tableau de bord | À venir |
+| 4 | Formations et tableau de bord | ✅ |
 | 5 | Finitions, démonstration et mise en ligne | À venir |
 
 ## Lancer le projet en local
@@ -62,8 +62,8 @@ Avec Docker (API + PostgreSQL) : `docker compose up --build`.
 ## Tests
 
 ```bash
-cd backend && ./mvnw test    # 62 tests : JUnit 5, Mockito, MockMvc
-cd frontend && npm test      # 26 tests : Vitest, Testing Library
+cd backend && ./mvnw test    # 73 tests : JUnit 5, Mockito, MockMvc
+cd frontend && npm test      # 30 tests : Vitest, Testing Library
 ```
 
 Les tests sont écrits avant le code (TDD) à partir des critères d'acceptation. GitHub Actions les exécute à chaque envoi, avec une vraie base PostgreSQL.

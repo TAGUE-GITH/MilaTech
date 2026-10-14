@@ -1,4 +1,4 @@
-import { AlertTriangle, CircuitBoard, Contact, FolderTree, Home, LogOut, Menu, Package, Receipt, ShoppingCart, Users, Wrench, X } from 'lucide-react'
+import { AlertTriangle, CircuitBoard, Contact, FolderTree, GraduationCap, Home, LogOut, Menu, Package, Receipt, ShoppingCart, Users, Wrench, X } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import { useState } from 'react'
 import { Link, NavLink, Outlet } from 'react-router-dom'
@@ -14,6 +14,7 @@ const NAV: NavItem[] = [
   { to: '/caisse', label: 'Caisse', Icon: ShoppingCart, roles: ['GERANT', 'VENDEUR'] },
   { to: '/ventes', label: 'Ventes', Icon: Receipt, roles: ['GERANT', 'VENDEUR'] },
   { to: '/reparations', label: 'Réparations', Icon: Wrench, roles: ['GERANT', 'TECHNICIEN', 'VENDEUR'] },
+  { to: '/formations', label: 'Formations', Icon: GraduationCap, roles: ['GERANT', 'FORMATEUR', 'VENDEUR'] },
   { to: '/clients', label: 'Clients', Icon: Contact },
   { to: '/produits', label: 'Produits et stock', Icon: Package },
   { to: '/stock/alertes', label: 'Stock bas', Icon: AlertTriangle, roles: ['GERANT', 'VENDEUR'] },
@@ -90,7 +91,7 @@ export default function Layout() {
   const [open, setOpen] = useState(false)
   return (
     <div className="min-h-dvh lg:flex">
-      <aside className="hidden w-64 shrink-0 flex-col gap-6 border-r border-slate-200 bg-white p-4 lg:sticky lg:top-0 lg:flex lg:h-dvh">
+      <aside className="hidden w-64 print:hidden! shrink-0 flex-col gap-6 border-r border-slate-200 bg-white p-4 lg:sticky lg:top-0 lg:flex lg:h-dvh">
         <Logo />
         <div className="flex-1">
           <Navigation />
@@ -98,7 +99,7 @@ export default function Layout() {
         <UserBox />
       </aside>
 
-      <header className="sticky top-0 z-30 flex items-center justify-between border-b border-slate-200 bg-white px-4 py-3 lg:hidden">
+      <header className="sticky top-0 z-30 print:hidden flex items-center justify-between border-b border-slate-200 bg-white px-4 py-3 lg:hidden">
         <Logo />
         <button
           type="button"
