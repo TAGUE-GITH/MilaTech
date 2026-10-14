@@ -10,7 +10,7 @@
 ![Docker](https://img.shields.io/badge/Docker-compose-2496ED?logo=docker&logoColor=white)
 ![CI](https://github.com/TAGUE-GITH/MilaTech/actions/workflows/ci.yml/badge.svg)
 
-> **État du projet :** Sprint 0 terminé (conception, environnement, intégration continue). Prochain sprint : comptes, catalogue et stock.
+> **État du projet :** Sprint 1 terminé (comptes et rôles, catalogue, stock). Prochain sprint : clients et ventes.
 
 ## Le besoin
 
@@ -42,7 +42,7 @@ MilaTech gère aujourd'hui ses activités au cahier et sur WhatsApp : stock ince
 | Sprint | Contenu | État |
 |---|---|---|
 | 0 | Conception, environnement, intégration continue | ✅ |
-| 1 | Comptes et rôles, catalogue, stock | À venir |
+| 1 | Comptes et rôles, catalogue, stock | ✅ |
 | 2 | Clients et ventes | À venir |
 | 3 | Réparations | À venir |
 | 4 | Formations et tableau de bord | À venir |
@@ -50,7 +50,7 @@ MilaTech gère aujourd'hui ses activités au cahier et sur WhatsApp : stock ince
 
 ## Lancer le projet en local
 
-Prérequis : Java 21 et Node.js 22. Aucune base à installer : en développement, l'API utilise H2 en mémoire.
+Prérequis : Java 21 et Node.js 22. Aucune base à installer : en développement, l'API utilise H2 en mémoire et crée un compte gérant local : `gerant@milatech.test` / `milatech-dev-2026` (développement uniquement).
 
 ```bash
 cd backend && ./mvnw spring-boot:run     # API sur http://localhost:8080
@@ -62,8 +62,8 @@ Avec Docker (API + PostgreSQL) : `docker compose up --build`.
 ## Tests
 
 ```bash
-cd backend && ./mvnw test    # JUnit 5, Mockito, MockMvc
-cd frontend && npm test      # Vitest, Testing Library
+cd backend && ./mvnw test    # 32 tests : JUnit 5, Mockito, MockMvc
+cd frontend && npm test      # 11 tests : Vitest, Testing Library
 ```
 
 Les tests sont écrits avant le code (TDD) à partir des critères d'acceptation. GitHub Actions les exécute à chaque envoi, avec une vraie base PostgreSQL.

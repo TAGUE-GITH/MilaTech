@@ -1,0 +1,48 @@
+package com.milatech.catalog;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
+import jakarta.persistence.LockModeType;
+
+public interface ProductRepository extends JpaRepository<Product, Long> {
+
+	boolean existsByReference(String reference);
+
+	boolean existsByReferenceAndIdNot(String reference, Long id);
+
+	boolean existsByCategoryId(Long categoryId);
+
+	/** Recherche par nom ou reference, filtre facultatif par categorie et stock bas. */
+	@Query("""
+			select p from Product p join fetch p.category left join fetch p.supplier
+			where (:q is null or lower(p.name) like lower(concat('%', :q, '%'))
+			       or lower(p.reference) like lower(concat('%', :q, '%')))
+			  and (:categoryId is null or p.category.id = :categoryId)
+			  and (:lowStock = false or p.quantity <= p.alertThreshold)
+			order by p.name""")
+	List<Product> search(@Param("q") String q, @Param("categoryId") Long categoryId, @Param("lowStock") boolean lowStock);
+
+	/** R3 : verrouille le produit jusqu'a la fin de la transaction (SELECT ... FOR UPDATE). */
+	@Lock(LockModeType.PESSIMISTIC_WRITE)
+	@Query("select p from Product p where p.id = :id")
+	Optional<Product> findByIdForUpdate(@Param("id") Long id);
+
+	/** Toujours dans l'ordre des identifiants pour eviter les interblocages entre deux ventes. */
+	@Lock(LockModeType.PESSIMISTIC_WRITE)
+	@Query("select p from Product p where p.id in :ids order by p.id")
+	List<Product> findAllByIdForUpdate(@Param("ids") Collection<Long> ids);
+
+	/** US-09 : produits actifs au seuil d'alerte ou en dessous, les plus urgents d'abord. */
+	@Query("""
+			select p from Product p join fetch p.category
+			where p.active = true and p.quantity <= p.alertThreshold
+			order by p.quantity, p.name""")
+	List<Product> lowStock();
+}
