@@ -29,6 +29,12 @@ import SalesPage from './features/sales/SalesPage'
 import TrainingDetailPage from './features/trainings/TrainingDetailPage'
 import TrainingsPage from './features/trainings/TrainingsPage'
 import UsersPage from './features/users/UsersPage'
+import CartPage from './features/shop/CartPage'
+import ClientOrderPage from './features/shop/ClientOrderPage'
+import OrderDetailPage from './features/shop/OrderDetailPage'
+import OrdersPage from './features/shop/OrdersPage'
+import ShopPage from './features/shop/ShopPage'
+import ShopProductPage from './features/shop/ShopProductPage'
 
 // Les formateurs n'ont pas acces aux reparations
 const REPAIR_ROLES: Role[] = ['GERANT', 'TECHNICIEN', 'VENDEUR']
@@ -53,12 +59,16 @@ export default function App() {
     <Routes>
       <Route path="/connexion" element={<LoginPage />} />
 
-      {/* Site public : vitrine, contact, inscription et espace des clients */}
+      {/* Site public : vitrine, boutique en ligne, contact, inscription et espace des clients */}
       <Route element={<PublicLayout />}>
         <Route index element={<PublicHomePage />} />
         <Route path="contact" element={<ContactPage />} />
         <Route path="inscription" element={<RegisterPage />} />
+        <Route path="boutique" element={<ShopPage />} />
+        <Route path="boutique/:id" element={<ShopProductPage />} />
+        <Route path="panier" element={<CartPage />} />
         <Route path="mon-espace" element={only(['CLIENT'], <ClientSpacePage />)} />
+        <Route path="mon-espace/commandes/:id" element={only(['CLIENT'], <ClientOrderPage />)} />
       </Route>
 
       {/* Espace de gestion : reserve au personnel de la boutique */}
@@ -81,6 +91,8 @@ export default function App() {
         <Route path="produits/:id/modifier" element={only(['GERANT'], <ProductFormPage />)} />
         <Route path="stock/alertes" element={only(['GERANT', 'VENDEUR'], <AlertsPage />)} />
         <Route path="catalogue" element={only(['GERANT'], <CatalogPage />)} />
+        <Route path="commandes" element={only(['GERANT', 'VENDEUR'], <OrdersPage />)} />
+        <Route path="commandes/:id" element={only(['GERANT', 'VENDEUR'], <OrderDetailPage />)} />
         <Route path="messages" element={only(['GERANT', 'VENDEUR'], <MessagesPage />)} />
         <Route path="employes" element={only(['GERANT'], <UsersPage />)} />
       </Route>

@@ -38,10 +38,10 @@ public class SecurityConfig {
 				.cors(cors -> cors.configurationSource(corsConfigurationSource()))
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 				.authorizeHttpRequests(auth -> auth
-						// Site public : inscription des clients, formulaire de contact, images (photos)
+						// Site public : inscription des clients, formulaire de contact, images (photos), catalogue de la boutique
 						.requestMatchers("/api/health", "/api/auth/login", "/api/auth/register", "/error").permitAll()
 						.requestMatchers(HttpMethod.POST, "/api/contact").permitAll()
-						.requestMatchers(HttpMethod.GET, "/api/images/*").permitAll()
+						.requestMatchers(HttpMethod.GET, "/api/images/*", "/api/shop/**").permitAll()
 						.anyRequest().authenticated())
 				// Sans jeton valide : 401 au lieu d'une page de connexion
 				.exceptionHandling(ex -> ex.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))

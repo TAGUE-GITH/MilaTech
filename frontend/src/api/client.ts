@@ -11,6 +11,10 @@ import type {
   EnrollmentStatus,
   NewRepair,
   NewUser,
+  Order,
+  OrderForm,
+  OrderStatus,
+  OrderSummary,
   PaymentMethod,
   RegisterForm,
   PeriodTotals,
@@ -20,6 +24,8 @@ import type {
   RepairStatus,
   RepairSummary,
   Sale,
+  ShopInfo,
+  ShopProduct,
   SaleSummary,
   StockMovement,
   Supplier,
@@ -139,6 +145,34 @@ export const productsApi = {
     data(api.post<Product>(`/products/${id}/adjustments`, body)),
   movements: (id: number) => data(api.get<StockMovement[]>(`/products/${id}/movements`)),
   alerts: () => data(api.get<Product[]>('/stock/alerts')),
+  setImage: (id: number, dataUrl: string) => data(api.put<Product>(`/products/${id}/image`, { dataUrl })),
+  removeImage: (id: number) => data(api.delete<Product>(`/products/${id}/image`)),
+}
+
+/** Boutique en ligne publique : produits en vente et en stock, sans connexion. */
+export const shopApi = {
+  products: (filters: { q?: string; categoryId?: number | '' } = {}) =>
+    data(api.get<ShopProduct[]>('/shop/products', { params: clean(filters) })),
+  product: (id: number) => data(api.get<ShopProduct>(`/shop/products/${id}`)),
+  categories: () => data(api.get<Category[]>('/shop/categories')),
+  info: () => data(api.get<ShopInfo>('/shop/info')),
+}
+
+/** Commandes du client connecte. */
+export const myOrdersApi = {
+  place: (form: OrderForm) => data(api.post<Order>('/me/orders', clean(form))),
+  list: () => data(api.get<OrderSummary[]>('/me/orders')),
+  get: (id: number) => data(api.get<Order>(`/me/orders/${id}`)),
+  cancel: (id: number) => data(api.post<Order>(`/me/orders/${id}/cancel`, {})),
+}
+
+/** Traitement des commandes en ligne par la boutique. */
+export const ordersApi = {
+  list: (filters: { status?: OrderStatus | ''; open?: boolean } = {}) =>
+    data(api.get<OrderSummary[]>('/orders', { params: clean(filters) })),
+  get: (id: number) => data(api.get<Order>(`/orders/${id}`)),
+  move: (id: number, body: { status: OrderStatus; paymentMethod?: PaymentMethod; note?: string }) =>
+    data(api.post<Order>(`/orders/${id}/status`, body)),
 }
 
 export const customersApi = {

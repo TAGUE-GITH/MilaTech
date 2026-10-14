@@ -1,7 +1,7 @@
 import { screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { vi } from 'vitest'
-import { catalogApi, productsApi } from '../api/client'
+import { catalogApi, ordersApi, productsApi } from '../api/client'
 import type { Product, Role } from '../api/types'
 import { useAuth } from '../auth/AuthProvider'
 import Layout from '../components/Layout'
@@ -12,7 +12,8 @@ import { renderPage } from './render'
 vi.mock('../api/client', async (importOriginal) => ({
   ...(await importOriginal<typeof import('../api/client')>()),
   catalogApi: { categories: vi.fn(), suppliers: vi.fn() },
-  productsApi: { list: vi.fn(), get: vi.fn(), purchase: vi.fn(), adjust: vi.fn(), movements: vi.fn(), alerts: vi.fn() },
+  productsApi: { list: vi.fn(), get: vi.fn(), purchase: vi.fn(), adjust: vi.fn(), movements: vi.fn(), alerts: vi.fn(), setImage: vi.fn(), removeImage: vi.fn() },
+  ordersApi: { list: vi.fn() },
 }))
 vi.mock('../auth/AuthProvider', () => ({ useAuth: vi.fn() }))
 
@@ -46,6 +47,7 @@ beforeEach(() => {
   vi.mocked(catalogApi.categories).mockResolvedValue([{ id: 1, name: 'Composants' }])
   vi.mocked(catalogApi.suppliers).mockResolvedValue([])
   vi.mocked(productsApi.movements).mockResolvedValue([])
+  vi.mocked(ordersApi.list).mockResolvedValue([])
 })
 
 describe('Menu selon le role (US-02)', () => {
@@ -54,7 +56,7 @@ describe('Menu selon le role (US-02)', () => {
   it('montre tout au gerant', () => {
     loggedAs('GERANT')
     renderPage(<Layout />)
-    expect(menu()).toEqual(['Accueil', 'Caisse', 'Ventes', 'Réparations', 'Formations', 'Clients', 'Produits et stock', 'Stock bas', 'Catégories et fournisseurs', 'Messages', 'Employés', 'Voir le site'])
+    expect(menu()).toEqual(['Accueil', 'Caisse', 'Ventes', 'Commandes en ligne', 'Réparations', 'Formations', 'Clients', 'Produits et stock', 'Stock bas', 'Catégories et fournisseurs', 'Messages', 'Employés', 'Voir le site'])
   })
 
   it('cache la gestion au technicien', () => {

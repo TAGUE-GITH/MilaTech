@@ -7,5 +7,9 @@ public enum MovementType {
 	CORRECTION,
 	VENTE,
 	PIECE_REPARATION,
-	RETOUR_PIECE
+	RETOUR_PIECE,
+	/** Produits reserves par une commande en ligne */
+	COMMANDE_EN_LIGNE,
+	/** Produits rendus au stock quand une commande en ligne est annulee */
+	ANNULATION_COMMANDE
 }

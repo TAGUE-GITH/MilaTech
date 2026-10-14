@@ -3,25 +3,28 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { vi } from 'vitest'
-import { authApi, contactApi } from '../api/client'
+import { authApi, contactApi, shopApi } from '../api/client'
 import type { User } from '../api/types'
 import { AuthProvider } from '../auth/AuthProvider'
 import ContactPage from '../features/public/ContactPage'
 import PublicHomePage from '../features/public/PublicHomePage'
 import PublicLayout from '../features/public/PublicLayout'
 import RegisterPage from '../features/public/RegisterPage'
+import { ShopCartProvider } from '../features/shop/ShopCart'
 
 vi.mock('../api/client', async (importOriginal) => ({
   ...(await importOriginal<typeof import('../api/client')>()),
   authApi: { login: vi.fn(), register: vi.fn(), me: vi.fn() },
   contactApi: { send: vi.fn() },
+  shopApi: { products: vi.fn(), categories: vi.fn(), info: vi.fn(), product: vi.fn() },
 }))
 
 const renderSite = (path: string) =>
   render(
     <QueryClientProvider client={new QueryClient({ defaultOptions: { mutations: { retry: false } } })}>
       <AuthProvider>
-        <MemoryRouter initialEntries={[path]}>
+        <ShopCartProvider>
+          <MemoryRouter initialEntries={[path]}>
           <Routes>
             <Route element={<PublicLayout />}>
               <Route index element={<PublicHomePage />} />
@@ -30,7 +33,8 @@ const renderSite = (path: string) =>
               <Route path="mon-espace" element={<p>Espace client</p>} />
             </Route>
           </Routes>
-        </MemoryRouter>
+          </MemoryRouter>
+        </ShopCartProvider>
       </AuthProvider>
     </QueryClientProvider>,
   )
@@ -39,6 +43,7 @@ describe('Site public', () => {
   beforeEach(() => {
     localStorage.clear()
     vi.clearAllMocks()
+    vi.mocked(shopApi.products).mockResolvedValue([])
   })
 
   it('presente les services et les coordonnees de la boutique a Yaounde', () => {

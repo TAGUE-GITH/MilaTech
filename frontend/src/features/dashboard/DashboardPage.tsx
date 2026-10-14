@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import { AlertTriangle, GraduationCap, Receipt, ShoppingCart, Wallet, Wrench } from 'lucide-react'
+import { AlertTriangle, GraduationCap, Receipt, ShoppingBag, ShoppingCart, Wallet, Wrench } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { dashboardApi, errorMessage } from '../../api/client'
@@ -70,7 +70,7 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-6">
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-5">
         <Tile label="Ventes du jour" value={formatFcfa(data.salesToday.total)} detail={`${data.salesToday.count} vente(s)`} to="/ventes" Icon={Receipt} />
         <Tile label="Ce mois-ci" value={formatFcfa(data.salesMonth.total)} detail={`Marge théorique ${formatFcfa(data.salesMonth.margin)}`} to="/ventes" Icon={ShoppingCart} />
         <Tile label="Réparations en cours" value={String(data.repairsInProgress)} detail={`${data.repairsReady.length} appareil(s) à rendre`} to="/reparations" Icon={Wrench} />
@@ -80,6 +80,14 @@ export default function DashboardPage() {
           detail={`Réparations ${formatFcfa(data.amountsDue.repairs)} · formations ${formatFcfa(data.amountsDue.trainings)}`}
           to="/formations"
           Icon={Wallet}
+        />
+        <Tile
+          label="Commandes en ligne"
+          value={String(data.ordersToProcess)}
+          detail={data.ordersToProcess ? 'à confirmer, préparer ou remettre' : 'Aucune commande à traiter'}
+          to="/commandes"
+          Icon={ShoppingBag}
+          alert={data.ordersToProcess > 0}
         />
       </div>
 

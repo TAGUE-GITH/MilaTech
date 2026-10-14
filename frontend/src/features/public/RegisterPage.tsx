@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import type { FormEvent } from 'react'
-import { Link, Navigate, useNavigate } from 'react-router-dom'
+import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom'
 import { errorMessage, fieldErrors } from '../../api/client'
 import type { RegisterForm } from '../../api/types'
 import { homeOf, useAuth } from '../../auth/AuthProvider'
@@ -10,6 +10,8 @@ import { Alert, Button, Card, Field } from '../../components/ui'
 export default function RegisterPage() {
   const { user, register } = useAuth()
   const navigate = useNavigate()
+  // Venu du panier : on y retourne pour finir la commande
+  const from = (useLocation().state as { from?: string } | null)?.from
   const [form, setForm] = useState<RegisterForm>({ firstName: '', lastName: '', email: '', phone: '', password: '' })
   const [error, setError] = useState('')
   const [errors, setErrors] = useState<Record<string, string>>({})
@@ -26,7 +28,7 @@ export default function RegisterPage() {
     setErrors({})
     try {
       await register(form)
-      navigate('/mon-espace', { replace: true, state: { welcome: true } })
+      navigate(from ?? '/mon-espace', { replace: true, state: { welcome: true } })
     } catch (err) {
       const byField = fieldErrors(err)
       setErrors(byField)
@@ -56,7 +58,7 @@ export default function RegisterPage() {
       </Card>
       <p className="mt-6 text-center text-sm text-slate-600">
         Déjà un compte ?{' '}
-        <Link to="/connexion" className="font-semibold text-brand-700">
+        <Link to="/connexion" state={from ? { from } : undefined} className="font-semibold text-brand-700">
           Se connecter
         </Link>
       </p>

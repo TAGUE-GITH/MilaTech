@@ -1,9 +1,12 @@
-// Panier de la caisse : fonctions pures (testees seules), le serveur reverifie le stock et les prix
+// Panier de la caisse et de la boutique en ligne : fonctions pures (testees seules),
+// le serveur reverifie le stock et les prix
 
 export type CartLine = {
   productId: number
   name: string
-  reference: string
+  reference?: string
+  /** Photo du produit (boutique en ligne) */
+  imageUrl?: string
   unitPrice: number
   /** Stock disponible au moment de l'ajout */
   available: number
@@ -14,11 +17,11 @@ export type CartProduct = Omit<CartLine, 'quantity'>
 
 const clamp = (quantity: number, available: number) => Math.max(0, Math.min(quantity, available))
 
-/** Ajoute une piece (ou une ligne) sans jamais depasser le stock disponible. */
-export function addToCart(cart: CartLine[], product: CartProduct): CartLine[] {
+/** Ajoute une piece (ou plusieurs) sans jamais depasser le stock disponible. */
+export function addToCart(cart: CartLine[], product: CartProduct, quantity = 1): CartLine[] {
   const existing = cart.find((line) => line.productId === product.productId)
-  if (!existing) return product.available > 0 ? [...cart, { ...product, quantity: 1 }] : cart
-  return setQuantity(cart, product.productId, existing.quantity + 1)
+  if (!existing) return product.available > 0 ? [...cart, { ...product, quantity: clamp(quantity, product.available) }] : cart
+  return setQuantity(cart, product.productId, existing.quantity + quantity)
 }
 
 /** Change la quantite d'une ligne ; a zero, la ligne disparait. */

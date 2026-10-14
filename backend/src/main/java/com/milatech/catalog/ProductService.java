@@ -7,6 +7,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.milatech.catalog.CatalogDtos.ProductRequest;
 import com.milatech.common.ApiException;
+import com.milatech.image.Image;
+import com.milatech.image.ImageService;
 import com.milatech.stock.StockService;
 import com.milatech.user.User;
 
@@ -18,13 +20,15 @@ public class ProductService {
 	private final CategoryRepository categories;
 	private final SupplierRepository suppliers;
 	private final StockService stock;
+	private final ImageService images;
 
 	public ProductService(ProductRepository products, CategoryRepository categories, SupplierRepository suppliers,
-			StockService stock) {
+			StockService stock, ImageService images) {
 		this.products = products;
 		this.categories = categories;
 		this.suppliers = suppliers;
 		this.stock = stock;
+		this.images = images;
 	}
 
 	@Transactional(readOnly = true)
@@ -66,6 +70,41 @@ public class ProductService {
 		product.setAlertThreshold(request.alertThreshold());
 		apply(product, request);
 		return product;
+	}
+
+	/** Photo de la boutique en ligne : la nouvelle remplace l'ancienne, qui est supprimee. */
+	@Transactional
+	public Product setImage(Long id, String dataUrl) {
+		Product product = get(id);
+		replaceImage(product, images.save(dataUrl));
+		return product;
+	}
+
+	@Transactional
+	public Product removeImage(Long id) {
+		Product product = get(id);
+		replaceImage(product, null);
+		return product;
+	}
+
+	private void replaceImage(Product product, Image image) {
+		Image previous = product.getImage();
+		product.setImage(image);
+		products.flush();
+		images.delete(previous);
+	}
+
+	/** Boutique en ligne : produits en vente et disponibles, par nom. */
+	@Transactional(readOnly = true)
+	public List<Product> shop(String q, Long categoryId) {
+		String pattern = q == null || q.isBlank() ? "%" : "%" + q.trim().toLowerCase() + "%";
+		return products.shop(pattern, categoryId == null, categoryId == null ? 0 : categoryId);
+	}
+
+	@Transactional(readOnly = true)
+	public Product shopProduct(Long id) {
+		return products.findById(id).filter(p -> p.isActive() && p.getQuantity() > 0)
+				.orElseThrow(() -> ApiException.notFound("Ce produit n'est plus disponible."));
 	}
 
 	private void apply(Product product, ProductRequest request) {

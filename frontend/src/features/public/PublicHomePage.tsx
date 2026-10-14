@@ -1,9 +1,12 @@
 import { ArrowRight, Cpu, GraduationCap, MapPin, MessageCircle, Phone, ShieldCheck, Smartphone, Wrench } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
+import { useQuery } from '@tanstack/react-query'
 import { Link } from 'react-router-dom'
+import { shopApi } from '../../api/client'
 import { buttonClasses } from '../../components/buttonClasses'
 import { COMPANY, displayPhone } from '../../lib/company'
 import { whatsappLink } from '../../lib/whatsapp'
+import { ProductCard } from '../shop/ShopPage'
 
 type Service = { title: string; text: string; points: string[]; Icon: LucideIcon }
 
@@ -52,9 +55,12 @@ export default function PublicHomePage() {
               Vente d’appareils et de composants, réparation de téléphones, d’ordinateurs et d’appareils Bluetooth, et formations pratiques.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
-              <Link to="/contact" className={buttonClasses('secondary', 'px-6 py-3 text-base')}>
-                Demander un devis
+              <Link to="/boutique" className={buttonClasses('secondary', 'px-6 py-3 text-base')}>
+                Voir la boutique
                 <ArrowRight className="size-4" aria-hidden />
+              </Link>
+              <Link to="/contact" className="inline-flex items-center gap-2 rounded-xl px-6 py-3 text-base font-semibold text-white ring-1 ring-white/60 hover:bg-white/10">
+                Demander un devis
               </Link>
               <a
                 href={whatsappLink(COMPANY.whatsapp, 'Bonjour MilaTech, ')}
@@ -99,6 +105,8 @@ export default function PublicHomePage() {
           ))}
         </ul>
       </section>
+
+      <ShopPreview />
 
       <section className="bg-slate-50">
         <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
@@ -156,5 +164,29 @@ export default function PublicHomePage() {
         </div>
       </section>
     </>
+  )
+}
+
+/** Quelques produits de la boutique en ligne (rien ne s'affiche tant qu'aucun produit n'est disponible). */
+function ShopPreview() {
+  const { data } = useQuery({ queryKey: ['shop', '', ''], queryFn: () => shopApi.products() })
+  if (!data?.length) return null
+  return (
+    <section className="mx-auto max-w-6xl px-4 pb-16 sm:px-6">
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <h2 className="text-3xl font-extrabold tracking-tight">En boutique</h2>
+          <p className="mt-1 text-slate-600">Commandez en ligne : retrait en boutique ou livraison à Yaoundé.</p>
+        </div>
+        <Link to="/boutique" className="font-semibold text-brand-700">
+          Tous les produits →
+        </Link>
+      </div>
+      <ul className="mt-8 grid grid-cols-2 gap-4 sm:gap-6 md:grid-cols-4">
+        {data.slice(0, 4).map((product) => (
+          <ProductCard key={product.id} product={product} />
+        ))}
+      </ul>
+    </section>
   )
 }

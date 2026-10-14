@@ -1,7 +1,11 @@
-import { LogOut, PackageSearch, Wrench } from 'lucide-react'
-import { useLocation } from 'react-router-dom'
+import { useQuery } from '@tanstack/react-query'
+import { ChevronRight, LogOut, PackageSearch, Wrench } from 'lucide-react'
+import { Link, useLocation } from 'react-router-dom'
+import { errorMessage, myOrdersApi } from '../../api/client'
 import { useAuth } from '../../auth/AuthProvider'
-import { Alert, Button, Card } from '../../components/ui'
+import { Alert, Badge, Button, Card, Loader } from '../../components/ui'
+import { formatDate, formatFcfa } from '../../lib/format'
+import { clientStepLabel, orderTone } from '../../lib/orders'
 import { ProfilePanel } from '../profile/ProfilePanel'
 
 // « Mon espace » : l'espace personnel d'un client du site
@@ -28,13 +32,7 @@ export default function ClientSpacePage() {
       )}
       <ProfilePanel />
       <div className="mt-6 grid gap-6 md:grid-cols-2">
-        <Card className="opacity-80">
-          <h2 className="flex items-center gap-2 font-bold">
-            <PackageSearch className="size-5 text-brand-700" aria-hidden />
-            Mes commandes
-          </h2>
-          <p className="mt-2 text-sm text-slate-600">Bientôt : commandez en ligne et suivez vos commandes ici.</p>
-        </Card>
+        <MyOrders />
         <Card className="opacity-80">
           <h2 className="flex items-center gap-2 font-bold">
             <Wrench className="size-5 text-brand-700" aria-hidden />
@@ -44,5 +42,47 @@ export default function ClientSpacePage() {
         </Card>
       </div>
     </div>
+  )
+}
+
+function MyOrders() {
+  const orders = useQuery({ queryKey: ['my-orders'], queryFn: myOrdersApi.list })
+  return (
+    <Card>
+      <h2 className="flex items-center gap-2 font-bold">
+        <PackageSearch className="size-5 text-brand-700" aria-hidden />
+        Mes commandes
+      </h2>
+      {orders.isPending && <Loader />}
+      {orders.isError && <Alert>{errorMessage(orders.error)}</Alert>}
+      {orders.data?.length === 0 && (
+        <p className="mt-2 text-sm text-slate-600">
+          Vous n’avez pas encore commandé.{' '}
+          <Link to="/boutique" className="font-semibold text-brand-700">
+            Voir la boutique
+          </Link>
+        </p>
+      )}
+      {orders.data && orders.data.length > 0 && (
+        <ul className="mt-2 divide-y divide-slate-100">
+          {orders.data.map((order) => (
+            <li key={order.id}>
+              <Link to={`/mon-espace/commandes/${order.id}`} className="flex items-center gap-3 py-3 hover:bg-slate-50">
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-semibold">
+                    {order.reference} <span className="font-normal text-slate-500">· {formatDate(order.createdAt)}</span>
+                  </p>
+                  <p className="text-sm text-slate-500 tabular-nums">
+                    {order.itemCount} article(s) · {formatFcfa(order.total)}
+                  </p>
+                </div>
+                <Badge tone={orderTone(order.status)}>{clientStepLabel(order.status, order.deliveryMode)}</Badge>
+                <ChevronRight className="size-4 text-slate-400" aria-hidden />
+              </Link>
+            </li>
+          ))}
+        </ul>
+      )}
+    </Card>
   )
 }

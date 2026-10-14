@@ -49,4 +49,21 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 			where p.active = true and p.quantity <= p.alertThreshold
 			order by p.quantity, p.name""")
 	List<Product> lowStock();
+
+	/** Boutique en ligne : produits en vente et en stock (meme principe de parametres jamais nuls que search). */
+	@Query("""
+			select p from Product p join fetch p.category
+			where p.active = true and p.quantity > 0
+			  and (lower(p.name) like :pattern or lower(p.category.name) like :pattern)
+			  and (:allCategories = true or p.category.id = :categoryId)
+			order by p.name""")
+	List<Product> shop(@Param("pattern") String pattern, @Param("allCategories") boolean allCategories,
+			@Param("categoryId") long categoryId);
+
+	/** Categories qui ont au moins un produit visible dans la boutique en ligne. */
+	@Query("""
+			select distinct c from Product p join p.category c
+			where p.active = true and p.quantity > 0
+			order by c.name""")
+	List<Category> shopCategories();
 }

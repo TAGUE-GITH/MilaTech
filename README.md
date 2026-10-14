@@ -10,7 +10,7 @@
 ![Docker](https://img.shields.io/badge/Docker-compose-2496ED?logo=docker&logoColor=white)
 ![CI](https://github.com/TAGUE-GITH/MilaTech/actions/workflows/ci.yml/badge.svg)
 
-> **État du projet :** Sprint 5 terminé (site public, comptes clients, photos de profil, formulaire de contact). Prochain sprint : boutique en ligne.
+> **État du projet :** Sprint 6 terminé (boutique en ligne : photos des produits, panier, commandes avec retrait ou livraison). Prochain sprint : devis de réparation en ligne.
 
 ## Le besoin
 
@@ -27,6 +27,7 @@ MilaTech gère aujourd'hui ses activités au cahier et sur WhatsApp : stock ince
 | 📊 Tableau de bord | Ventes du jour, stock bas, réparations en cours et prêtes, soldes à encaisser |
 | 👥 Comptes | Gérant, vendeurs, techniciens, formateurs : chacun ne voit que ce qui le concerne ; photo de profil pour tous |
 | 🌐 Site public | Vitrine de la boutique (Bonas, Yaoundé), formulaire de contact, comptes clients et « Mon espace » |
+| 🛍️ Boutique en ligne | Produits disponibles avec photo, panier, commande avec retrait en boutique ou livraison à Yaoundé, paiement à la remise ; articles réservés dans le stock ; suivi par le client, traitement par la boutique (la commande remise devient une vente) |
 
 ## Conception (Sprint 0)
 
@@ -48,7 +49,7 @@ MilaTech gère aujourd'hui ses activités au cahier et sur WhatsApp : stock ince
 | 3 | Réparations | ✅ |
 | 4 | Formations et tableau de bord | ✅ |
 | 5 | Site public (vitrine, contact), comptes clients, espace personnel et photo de profil | ✅ |
-| 6 | Boutique en ligne : catalogue avec photos, panier, commandes | À venir |
+| 6 | Boutique en ligne : catalogue avec photos, panier, commandes (retrait ou livraison), traitement par la boutique | ✅ |
 | 7 | Devis de réparation en ligne, suivi des réparations par le client | À venir |
 | 8 | Finitions, démonstration et mise en ligne | À venir |
 
@@ -66,8 +67,8 @@ Avec Docker (API + PostgreSQL) : `docker compose up --build`.
 ## Tests
 
 ```bash
-cd backend && ./mvnw test    # 84 tests : JUnit 5, Mockito, MockMvc
-cd frontend && npm test      # 36 tests : Vitest, Testing Library
+cd backend && ./mvnw test    # 95 tests : JUnit 5, Mockito, MockMvc
+cd frontend && npm test      # 46 tests : Vitest, Testing Library
 ```
 
 Les tests sont écrits avant le code (TDD) à partir des critères d'acceptation. GitHub Actions les exécute à chaque envoi, avec une vraie base PostgreSQL.

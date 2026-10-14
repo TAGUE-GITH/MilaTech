@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.milatech.catalog.CatalogDtos.ImageRequest;
 import com.milatech.catalog.CatalogDtos.ProductRequest;
 import com.milatech.catalog.CatalogDtos.ProductResponse;
 import com.milatech.user.Role;
@@ -66,5 +68,17 @@ public class ProductController {
 	@PreAuthorize("hasRole('GERANT')")
 	public ProductResponse update(@PathVariable Long id, @Valid @RequestBody ProductRequest request) {
 		return ProductResponse.of(products.update(id, request), true);
+	}
+
+	@PutMapping("/{id}/image")
+	@PreAuthorize("hasRole('GERANT')")
+	public ProductResponse setImage(@PathVariable Long id, @Valid @RequestBody ImageRequest request) {
+		return ProductResponse.of(products.setImage(id, request.dataUrl()), true);
+	}
+
+	@DeleteMapping("/{id}/image")
+	@PreAuthorize("hasRole('GERANT')")
+	public ProductResponse removeImage(@PathVariable Long id) {
+		return ProductResponse.of(products.removeImage(id), true);
 	}
 }

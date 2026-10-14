@@ -48,12 +48,17 @@ public class SaleLine {
 	}
 
 	public SaleLine(Sale sale, Product product, int quantity) {
+		this(sale, product, quantity, product.getSalePrice());
+	}
+
+	/** Prix de vente deja fige ailleurs (commande en ligne : le prix au moment de la commande). */
+	public SaleLine(Sale sale, Product product, int quantity, long unitPrice) {
 		this.sale = sale;
 		this.product = product;
 		this.productName = product.getName();
 		this.productReference = product.getReference();
 		this.quantity = quantity;
-		this.unitPrice = product.getSalePrice();
+		this.unitPrice = unitPrice;
 		this.unitCost = product.getPurchasePrice();
 	}
 

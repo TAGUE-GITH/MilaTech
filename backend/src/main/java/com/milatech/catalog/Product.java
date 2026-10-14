@@ -2,6 +2,8 @@ package com.milatech.catalog;
 
 import java.time.Instant;
 
+import com.milatech.image.Image;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -53,6 +55,11 @@ public class Product {
 
 	@Column(nullable = false)
 	private boolean active = true;
+
+	/** Photo affichee dans la boutique en ligne. */
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "image_id")
+	private Image image;
 
 	@Column(name = "created_at", nullable = false)
 	private Instant createdAt = Instant.now();
@@ -170,5 +177,13 @@ public class Product {
 
 	public Instant getCreatedAt() {
 		return createdAt;
+	}
+
+	public Image getImage() {
+		return image;
+	}
+
+	public void setImage(Image image) {
+		this.image = image;
 	}
 }

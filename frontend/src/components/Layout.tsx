@@ -11,6 +11,7 @@ import {
   Menu,
   Package,
   Receipt,
+  ShoppingBag,
   ShoppingCart,
   Users,
   Wrench,
@@ -18,19 +19,22 @@ import {
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import { useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
 import { Link, NavLink, Outlet } from 'react-router-dom'
+import { ordersApi } from '../api/client'
 import { ROLE_LABELS } from '../api/types'
 import type { Role } from '../api/types'
 import { useAuth } from '../auth/AuthProvider'
 import { Avatar } from './Avatar'
 
-type NavItem = { to: string; label: string; Icon: LucideIcon; roles?: Role[] }
+type NavItem = { to: string; label: string; Icon: LucideIcon; roles?: Role[]; badge?: 'newOrders' }
 
 // Menus visibles selon le role (le serveur verifie aussi chaque droit)
 const NAV: NavItem[] = [
   { to: '/accueil', label: 'Accueil', Icon: Home },
   { to: '/caisse', label: 'Caisse', Icon: ShoppingCart, roles: ['GERANT', 'VENDEUR'] },
   { to: '/ventes', label: 'Ventes', Icon: Receipt, roles: ['GERANT', 'VENDEUR'] },
+  { to: '/commandes', label: 'Commandes en ligne', Icon: ShoppingBag, roles: ['GERANT', 'VENDEUR'], badge: 'newOrders' },
   { to: '/reparations', label: 'Réparations', Icon: Wrench, roles: ['GERANT', 'TECHNICIEN', 'VENDEUR'] },
   { to: '/formations', label: 'Formations', Icon: GraduationCap, roles: ['GERANT', 'FORMATEUR', 'VENDEUR'] },
   { to: '/clients', label: 'Clients', Icon: Contact },
@@ -55,12 +59,23 @@ function Logo() {
   )
 }
 
+/** Nombre de nouvelles commandes a confirmer, verifie chaque minute. */
+function NewOrdersBadge() {
+  const { data } = useQuery({ queryKey: ['orders', 'EN_ATTENTE'], queryFn: () => ordersApi.list({ status: 'EN_ATTENTE' }), refetchInterval: 60_000 })
+  if (!data?.length) return null
+  return (
+    <span className="ml-auto rounded-full bg-amber-500 px-2 py-0.5 text-xs font-bold text-white" aria-label={`${data.length} nouvelle(s)`}>
+      {data.length}
+    </span>
+  )
+}
+
 function Navigation({ onNavigate }: { onNavigate?: () => void }) {
   const { user } = useAuth()
   const items = NAV.filter((item) => !item.roles || (user && item.roles.includes(user.role)))
   return (
     <nav aria-label="Menu principal" className="flex flex-col gap-1">
-      {items.map(({ to, label, Icon }) => (
+      {items.map(({ to, label, Icon, badge }) => (
         <NavLink
           key={to}
           to={to}
@@ -74,6 +89,7 @@ function Navigation({ onNavigate }: { onNavigate?: () => void }) {
         >
           <Icon className="size-5" aria-hidden />
           {label}
+          {badge === 'newOrders' && <NewOrdersBadge />}
         </NavLink>
       ))}
     </nav>

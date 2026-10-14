@@ -4,6 +4,7 @@ import { createRoot } from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
 import App from './App'
 import { AuthProvider } from './auth/AuthProvider'
+import { ShopCartProvider } from './features/shop/ShopCart'
 import './index.css'
 
 // Cache des donnees de l'API : une seule nouvelle tentative en cas d'echec (connexion parfois instable)
@@ -13,9 +14,11 @@ createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <BrowserRouter>
-          <App />
-        </BrowserRouter>
+        <ShopCartProvider>
+          <BrowserRouter>
+            <App />
+          </BrowserRouter>
+        </ShopCartProvider>
       </AuthProvider>
     </QueryClientProvider>
   </StrictMode>,

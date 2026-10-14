@@ -1,6 +1,7 @@
 package com.milatech.catalog;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.milatech.image.Image;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Min;
@@ -63,14 +64,29 @@ public final class CatalogDtos {
 	@JsonInclude(JsonInclude.Include.NON_NULL)
 	public record ProductResponse(Long id, String reference, String name, Named category, Named supplier,
 			String description, Long purchasePrice, long salePrice, int quantity, int alertThreshold, boolean lowStock,
-			boolean active) {
+			boolean active, String imageUrl) {
 
 		public static ProductResponse of(Product p, boolean showCosts) {
 			Named supplier = p.getSupplier() == null ? null : new Named(p.getSupplier().getId(), p.getSupplier().getName());
 			return new ProductResponse(p.getId(), p.getReference(), p.getName(),
 					new Named(p.getCategory().getId(), p.getCategory().getName()), supplier, p.getDescription(),
 					showCosts ? p.getPurchasePrice() : null, p.getSalePrice(), p.getQuantity(), p.getAlertThreshold(),
-					p.isLowStock(), p.isActive());
+					p.isLowStock(), p.isActive(), Image.url(p.getImage()));
+		}
+	}
+
+	public record ImageRequest(@NotBlank(message = "Choisissez une photo.") String dataUrl) {
+	}
+
+	/** Produit tel que les visiteurs le voient dans la boutique en ligne : ni reference interne, ni prix d'achat. */
+	@JsonInclude(JsonInclude.Include.NON_NULL)
+	public record ShopProduct(Long id, String name, String description, Named category, long price, int stock,
+			String imageUrl) {
+
+		public static ShopProduct of(Product p) {
+			return new ShopProduct(p.getId(), p.getName(), p.getDescription(),
+					new Named(p.getCategory().getId(), p.getCategory().getName()), p.getSalePrice(), p.getQuantity(),
+					Image.url(p.getImage()));
 		}
 	}
 }

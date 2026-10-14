@@ -53,6 +53,8 @@ export type Product = {
   alertThreshold: number
   lowStock: boolean
   active: boolean
+  /** Photo affichee dans la boutique en ligne */
+  imageUrl?: string
 }
 
 export type ProductForm = {
@@ -68,7 +70,15 @@ export type ProductForm = {
   active: boolean
 }
 
-export type MovementType = 'STOCK_INITIAL' | 'ACHAT' | 'CORRECTION' | 'VENTE' | 'PIECE_REPARATION' | 'RETOUR_PIECE'
+export type MovementType =
+  | 'STOCK_INITIAL'
+  | 'ACHAT'
+  | 'CORRECTION'
+  | 'VENTE'
+  | 'PIECE_REPARATION'
+  | 'RETOUR_PIECE'
+  | 'COMMANDE_EN_LIGNE'
+  | 'ANNULATION_COMMANDE'
 
 export const MOVEMENT_LABELS: Record<MovementType, string> = {
   STOCK_INITIAL: 'Stock initial',
@@ -77,6 +87,8 @@ export const MOVEMENT_LABELS: Record<MovementType, string> = {
   VENTE: 'Vente',
   PIECE_REPARATION: 'Pièce de réparation',
   RETOUR_PIECE: 'Retour de pièce',
+  COMMANDE_EN_LIGNE: 'Commande en ligne',
+  ANNULATION_COMMANDE: 'Commande annulée',
 }
 
 export type StockMovement = {
@@ -295,6 +307,7 @@ export type Dashboard = {
   repairsReady: RepairSummary[]
   amountsDue: { repairs: number; trainings: number }
   recent: { type: 'VENTE' | 'REPARATION' | 'INSCRIPTION'; label: string; detail: string; targetId: number; at: string }[]
+  ordersToProcess: number
 }
 
 export type ContactMessage = {
@@ -311,3 +324,68 @@ export type ContactMessage = {
 export type ContactForm = { name: string; phone: string; email: string; subject: string; message: string; website: string }
 
 export type RegisterForm = { firstName: string; lastName: string; email: string; phone: string; password: string }
+
+/** Produit tel qu'il apparait dans la boutique en ligne (sans reference interne ni prix d'achat) */
+export type ShopProduct = {
+  id: number
+  name: string
+  description?: string
+  category: Named
+  price: number
+  stock: number
+  imageUrl?: string
+}
+
+export type ShopInfo = { deliveryFee: number; deliveryCity: string }
+
+export type OrderStatus = 'EN_ATTENTE' | 'CONFIRMEE' | 'PRETE' | 'REMISE' | 'ANNULEE'
+
+export type DeliveryMode = 'RETRAIT' | 'LIVRAISON'
+
+export const DELIVERY_LABELS: Record<DeliveryMode, string> = {
+  RETRAIT: 'Retrait en boutique',
+  LIVRAISON: 'Livraison',
+}
+
+export type OrderSummary = {
+  id: number
+  reference: string
+  customer: string
+  customerPhone: string
+  status: OrderStatus
+  statusLabel: string
+  deliveryMode: DeliveryMode
+  total: number
+  itemCount: number
+  createdAt: string
+}
+
+export type Order = {
+  id: number
+  reference: string
+  status: OrderStatus
+  statusLabel: string
+  nextStatuses: OrderStatus[]
+  deliveryMode: DeliveryMode
+  address?: string
+  phone: string
+  note?: string
+  subtotal: number
+  deliveryFee: number
+  total: number
+  cancelReason?: string
+  saleId?: number
+  saleReference?: string
+  customer: { id: number; fullName: string; phone: string }
+  createdAt: string
+  updatedAt: string
+  lines: { productId: number; productName: string; imageUrl?: string; quantity: number; unitPrice: number; lineTotal: number }[]
+}
+
+export type OrderForm = {
+  deliveryMode: DeliveryMode
+  address: string
+  phone: string
+  note: string
+  lines: { productId: number; quantity: number }[]
+}

@@ -23,6 +23,9 @@ public class GlobalExceptionHandler {
 
 	@ExceptionHandler(ApiException.class)
 	public ResponseEntity<ApiError> business(ApiException exception) {
+		if (exception.getField() != null)
+			return ResponseEntity.status(exception.getStatus()).body(new ApiError("Certaines informations sont invalides.",
+					Map.of(exception.getField(), exception.getMessage())));
 		return ResponseEntity.status(exception.getStatus()).body(new ApiError(exception.getMessage(), Map.of()));
 	}
 

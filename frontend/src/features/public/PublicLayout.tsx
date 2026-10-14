@@ -1,4 +1,4 @@
-import { CircuitBoard, LayoutDashboard, MapPin, Menu, MessageCircle, Phone, User, X } from 'lucide-react'
+import { CircuitBoard, LayoutDashboard, MapPin, Menu, MessageCircle, Phone, ShoppingCart, User, X } from 'lucide-react'
 import { useState } from 'react'
 import { Link, NavLink, Outlet } from 'react-router-dom'
 import { homeOf, useAuth } from '../../auth/AuthProvider'
@@ -6,12 +6,14 @@ import { Avatar } from '../../components/Avatar'
 import { buttonClasses } from '../../components/buttonClasses'
 import { COMPANY, displayPhone } from '../../lib/company'
 import { whatsappLink } from '../../lib/whatsapp'
+import { useShopCart } from '../shop/ShopCart'
 
 // Annee du pied de page, calculee une fois au chargement
 const YEAR = new Date().getFullYear()
 
 const LINKS = [
   { to: '/', label: 'Accueil' },
+  { to: '/boutique', label: 'Boutique' },
   { to: '/#services', label: 'Services' },
   { to: '/contact', label: 'Contact' },
 ]
@@ -51,7 +53,22 @@ function AccountButton() {
   )
 }
 
-// Site public de MilaTech : vitrine, contact, inscription et espace client
+/** Panier toujours visible, avec le nombre d'articles. */
+function CartButton() {
+  const { count } = useShopCart()
+  return (
+    <Link to="/panier" className="relative rounded-xl p-2 text-slate-700 hover:bg-slate-100" aria-label={count ? `Panier : ${count} article(s)` : 'Panier'}>
+      <ShoppingCart className="size-6" aria-hidden />
+      {count > 0 && (
+        <span className="absolute -top-0.5 -right-0.5 flex min-w-5 items-center justify-center rounded-full bg-brand-700 px-1 text-xs font-bold text-white">
+          {count}
+        </span>
+      )}
+    </Link>
+  )
+}
+
+// Site public de MilaTech : vitrine, boutique, contact, inscription et espace client
 export default function PublicLayout() {
   const [open, setOpen] = useState(false)
   return (
@@ -66,15 +83,18 @@ export default function PublicLayout() {
               </NavLink>
             ))}
           </nav>
-          <div className="ml-auto hidden md:block">
-            <AccountButton />
+          <div className="ml-auto flex items-center gap-2">
+            <div className="hidden md:block">
+              <AccountButton />
+            </div>
+            <CartButton />
           </div>
           <button
             type="button"
             onClick={() => setOpen(!open)}
             aria-expanded={open}
             aria-label={open ? 'Fermer le menu' : 'Ouvrir le menu'}
-            className="ml-auto rounded-xl p-2 text-slate-700 hover:bg-slate-100 md:hidden"
+            className="-ml-4 rounded-xl p-2 text-slate-700 hover:bg-slate-100 md:hidden"
           >
             {open ? <X className="size-6" /> : <Menu className="size-6" />}
           </button>
