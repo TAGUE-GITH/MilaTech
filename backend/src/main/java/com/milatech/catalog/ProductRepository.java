@@ -19,15 +19,19 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
 	boolean existsByCategoryId(Long categoryId);
 
-	/** Recherche par nom ou reference, filtre facultatif par categorie et stock bas. */
+	/**
+	 * Recherche par nom ou reference, filtre facultatif par categorie et stock bas.
+	 * Aucun parametre n'est jamais null : PostgreSQL doit pouvoir deviner le type de chaque parametre
+	 * (« % » pour tout afficher, allCategories pour ignorer le filtre de categorie).
+	 */
 	@Query("""
 			select p from Product p join fetch p.category left join fetch p.supplier
-			where (:q is null or lower(p.name) like lower(concat('%', :q, '%'))
-			       or lower(p.reference) like lower(concat('%', :q, '%')))
-			  and (:categoryId is null or p.category.id = :categoryId)
+			where (lower(p.name) like :pattern or lower(p.reference) like :pattern)
+			  and (:allCategories = true or p.category.id = :categoryId)
 			  and (:lowStock = false or p.quantity <= p.alertThreshold)
 			order by p.name""")
-	List<Product> search(@Param("q") String q, @Param("categoryId") Long categoryId, @Param("lowStock") boolean lowStock);
+	List<Product> search(@Param("pattern") String pattern, @Param("allCategories") boolean allCategories,
+			@Param("categoryId") long categoryId, @Param("lowStock") boolean lowStock);
 
 	/** R3 : verrouille le produit jusqu'a la fin de la transaction (SELECT ... FOR UPDATE). */
 	@Lock(LockModeType.PESSIMISTIC_WRITE)

@@ -29,8 +29,8 @@ public class ProductService {
 
 	@Transactional(readOnly = true)
 	public List<Product> search(String q, Long categoryId, boolean lowStock) {
-		String query = q == null || q.isBlank() ? null : q.trim();
-		return products.search(query, categoryId, lowStock);
+		String pattern = q == null || q.isBlank() ? "%" : "%" + q.trim().toLowerCase() + "%";
+		return products.search(pattern, categoryId == null, categoryId == null ? 0 : categoryId, lowStock);
 	}
 
 	@Transactional(readOnly = true)
