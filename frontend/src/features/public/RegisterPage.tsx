@@ -4,7 +4,7 @@ import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom'
 import { errorMessage, fieldErrors } from '../../api/client'
 import type { RegisterForm } from '../../api/types'
 import { homeOf, useAuth } from '../../auth/AuthProvider'
-import { Alert, Button, Card, Field } from '../../components/ui'
+import { Alert, Button, Card, Checkbox, Field } from '../../components/ui'
 
 // Inscription d'un client depuis le site public
 export default function RegisterPage() {
@@ -12,7 +12,7 @@ export default function RegisterPage() {
   const navigate = useNavigate()
   // Venu du panier : on y retourne pour finir la commande
   const from = (useLocation().state as { from?: string } | null)?.from
-  const [form, setForm] = useState<RegisterForm>({ firstName: '', lastName: '', email: '', phone: '', password: '' })
+  const [form, setForm] = useState<RegisterForm>({ firstName: '', lastName: '', email: '', phone: '', password: '', acceptTerms: false })
   const [error, setError] = useState('')
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [sending, setSending] = useState(false)
@@ -51,6 +51,24 @@ export default function RegisterPage() {
           <Field label="Email" type="email" value={form.email} onChange={(e) => set({ email: e.target.value })} error={errors.email} autoComplete="email" />
           <Field label="Téléphone" type="tel" value={form.phone} onChange={(e) => set({ phone: e.target.value })} error={errors.phone} autoComplete="tel" placeholder="6XX XX XX XX" />
           <Field label="Mot de passe" type="password" value={form.password} onChange={(e) => set({ password: e.target.value })} error={errors.password} autoComplete="new-password" hint="8 caractères minimum" />
+          <Checkbox
+            checked={form.acceptTerms}
+            onChange={(e) => set({ acceptTerms: e.target.checked })}
+            error={errors.acceptTerms}
+            label={
+              <>
+                J’ai lu et j’accepte les{' '}
+                <Link to="/conditions-generales" target="_blank" className="font-semibold text-brand-700 underline">
+                  conditions générales
+                </Link>{' '}
+                et la{' '}
+                <Link to="/confidentialite" target="_blank" className="font-semibold text-brand-700 underline">
+                  politique de confidentialité
+                </Link>
+                .
+              </>
+            }
+          />
           <Button type="submit" loading={sending} className="w-full">
             Créer mon compte
           </Button>

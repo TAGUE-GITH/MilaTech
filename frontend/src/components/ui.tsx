@@ -52,6 +52,35 @@ export function Field({ label, error, hint, className, ...props }: FieldProps) {
   )
 }
 
+type CheckboxProps = Omit<InputHTMLAttributes<HTMLInputElement>, 'type'> & { label: ReactNode; error?: string }
+
+/** Case a cocher avec un libelle riche (liens) et son message d'erreur. */
+export function Checkbox({ label, error, className = '', ...props }: CheckboxProps) {
+  const id = useId()
+  return (
+    <div className={className}>
+      <div className="flex items-start gap-2.5">
+        <input
+          id={id}
+          type="checkbox"
+          aria-invalid={Boolean(error)}
+          aria-describedby={error ? `${id}-error` : undefined}
+          className="mt-0.5 size-4 shrink-0 rounded border-slate-300 accent-brand-700"
+          {...props}
+        />
+        <label htmlFor={id} className="text-sm text-slate-700">
+          {label}
+        </label>
+      </div>
+      {error && (
+        <p id={`${id}-error`} className="mt-1.5 text-sm text-red-700">
+          {error}
+        </p>
+      )}
+    </div>
+  )
+}
+
 type SelectProps = SelectHTMLAttributes<HTMLSelectElement> & { label: string; error?: string; children: ReactNode }
 
 export function Select({ label, error, className, children, ...props }: SelectProps) {

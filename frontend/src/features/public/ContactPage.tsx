@@ -2,11 +2,13 @@ import { useMutation } from '@tanstack/react-query'
 import { CheckCircle2, MapPin, MessageCircle, Phone } from 'lucide-react'
 import { useState } from 'react'
 import type { FormEvent } from 'react'
+import { Link } from 'react-router-dom'
 import { contactApi, errorMessage, fieldErrors } from '../../api/client'
 import type { ContactForm } from '../../api/types'
 import { useAuth } from '../../auth/AuthProvider'
 import { buttonClasses } from '../../components/buttonClasses'
 import { Alert, Button, Card, Field, TextArea } from '../../components/ui'
+import { OpeningHours } from '../../components/OpeningHours'
 import { COMPANY, displayPhone } from '../../lib/company'
 import { whatsappLink } from '../../lib/whatsapp'
 
@@ -62,7 +64,13 @@ export default function ContactPage() {
                   <input tabIndex={-1} autoComplete="off" value={form.website} onChange={(e) => set({ website: e.target.value })} />
                 </label>
               </div>
-              <Button type="submit" loading={send.isPending}>
+              <p className="text-xs text-slate-500">
+                  Vos informations servent uniquement à vous répondre.{' '}
+                  <Link to="/confidentialite" className="font-semibold text-brand-700">
+                    Politique de confidentialité
+                  </Link>
+                </p>
+                <Button type="submit" loading={send.isPending}>
                 Envoyer le message
               </Button>
             </form>
@@ -85,6 +93,10 @@ export default function ContactPage() {
             <a href={COMPANY.mapsUrl} target="_blank" rel="noreferrer" className="mt-3 inline-block text-sm font-semibold text-brand-700">
               Ouvrir dans Google Maps
             </a>
+          </Card>
+          <Card>
+            <h2 className="font-bold">Horaires d’ouverture</h2>
+            <OpeningHours className="mt-2 text-slate-700" />
           </Card>
           <Card>
             <h2 className="flex items-center gap-2 font-bold">

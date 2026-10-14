@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.milatech.catalog.Product;
 import com.milatech.common.ApiException;
+import com.milatech.common.Terms;
 import com.milatech.customer.Customer;
 import com.milatech.sale.Sale;
 import com.milatech.sale.SaleLine;
@@ -71,6 +72,7 @@ public class OrderService {
 		OnlineOrder order = orders.save(new OnlineOrder(customer, request.deliveryMode(), delivery ? address : null,
 				request.phone().trim(), note, delivery ? deliveryFee : 0));
 		order.assignReference();
+		order.acceptTerms(Terms.VERSION);
 		for (StockLine line : lines)
 			order.addLine(new OnlineOrderLine(order, products.get(line.productId()), line.quantity()));
 		stock.remove(lines, MovementType.COMMANDE_EN_LIGNE, order.getReference(), client);

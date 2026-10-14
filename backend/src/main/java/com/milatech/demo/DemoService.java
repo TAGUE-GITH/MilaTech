@@ -160,6 +160,7 @@ public class DemoService {
 			User user = new User(account.email(), hash, account.firstName(), account.lastName(), "690000000", account.role());
 			if (account.role() == Role.CLIENT) {
 				user.setPhone("677112233");
+				user.acceptTerms(com.milatech.common.Terms.VERSION);
 				user.setCustomer(customers.save(new Customer(account.firstName() + " " + account.lastName(), "677112233",
 						account.email(), null)));
 				client = users.save(user);
@@ -251,13 +252,13 @@ public class DemoService {
 
 		// Le client de demonstration : une commande remise, une en attente, trois demandes de devis
 		OnlineOrder pickedUp = orderService.place(new OrderRequest(DeliveryMode.RETRAIT, null, "677112233", null,
-				List.of(new OrderLineRequest(products.get("PWB-20K"), 1))), client);
+				List.of(new OrderLineRequest(products.get("PWB-20K"), 1)), true), client);
 		orderService.move(pickedUp.getId(), OrderStatus.CONFIRMEE, null, null, seller);
 		orderService.move(pickedUp.getId(), OrderStatus.PRETE, null, null, seller);
 		orderService.move(pickedUp.getId(), OrderStatus.REMISE, Sale.PaymentMethod.ESPECES, null, seller);
 		orderService.place(new OrderRequest(DeliveryMode.LIVRAISON, "Mvog-Ada, près du carrefour", "677112233",
 				"Appelez-moi avant de venir.", List.of(new OrderLineRequest(products.get("EAR-TWS"), 1),
-						new OrderLineRequest(products.get("CBL-USBC"), 2))), client);
+						new OrderLineRequest(products.get("CBL-USBC"), 2)), true), client);
 
 		var tablet = quoteService.request(new QuoteForm(Repair.DeviceType.TABLETTE, "Samsung", "Galaxy Tab A8",
 				"La batterie se vide en deux heures.", null), client);

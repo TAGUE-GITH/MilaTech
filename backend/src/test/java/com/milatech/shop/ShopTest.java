@@ -49,7 +49,7 @@ class ShopTest extends IntegrationTest {
 		clients++;
 		String body = postAs(null, "/api/auth/register", """
 				{"firstName": "Awa", "lastName": "Ngono", "email": "awa%d@client.test", "phone": "677 11 22 33",
-				 "password": "%s"}""".formatted(clients, PASSWORD)).andReturn().getResponse().getContentAsString();
+				 "password": "%s", "acceptTerms": true}""".formatted(clients, PASSWORD)).andReturn().getResponse().getContentAsString();
 		return JsonPath.read(body, "$.token");
 	}
 
@@ -59,7 +59,8 @@ class ShopTest extends IntegrationTest {
 			lines.append(i == 0 ? "" : ",").append("{\"productId\": %d, \"quantity\": %d}"
 					.formatted(productAndQuantity[i], productAndQuantity[i + 1]));
 		return """
-				{"deliveryMode": "%s", "address": %s, "phone": "677112233", "note": "Appelez avant", "lines": [%s]}"""
+				{"deliveryMode": "%s", "address": %s, "phone": "677112233", "note": "Appelez avant", "acceptTerms": true,
+				 "lines": [%s]}"""
 				.formatted(mode, address == null ? "null" : "\"" + address + "\"", lines);
 	}
 

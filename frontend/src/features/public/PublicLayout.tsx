@@ -4,6 +4,7 @@ import { Link, NavLink, Outlet } from 'react-router-dom'
 import { homeOf, useAuth } from '../../auth/AuthProvider'
 import { Avatar } from '../../components/Avatar'
 import { DemoBanner } from '../../components/DemoBanner'
+import { OpeningHours } from '../../components/OpeningHours'
 import { buttonClasses } from '../../components/buttonClasses'
 import { COMPANY, displayPhone } from '../../lib/company'
 import { whatsappLink } from '../../lib/whatsapp'
@@ -120,7 +121,7 @@ export default function PublicLayout() {
       </main>
 
       <footer className="border-t border-slate-200 bg-slate-50">
-        <div className="mx-auto grid max-w-6xl gap-8 px-4 py-10 sm:grid-cols-3 sm:px-6">
+        <div className="mx-auto grid max-w-6xl gap-8 px-4 py-10 sm:grid-cols-2 sm:px-6 lg:grid-cols-4">
           <div>
             <Logo />
             <p className="mt-3 text-sm text-slate-600">{COMPANY.tagline} à {COMPANY.city}.</p>
@@ -136,6 +137,10 @@ export default function PublicLayout() {
               </span>
             </p>
           </div>
+          <div className="text-sm text-slate-600">
+            <p className="font-semibold text-ink">Horaires</p>
+            <OpeningHours className="mt-2" />
+          </div>
           <div className="space-y-2 text-sm text-slate-600">
             <p className="font-semibold text-ink">Nous appeler</p>
             {COMPANY.phones.map((phone) => (
@@ -150,9 +155,17 @@ export default function PublicLayout() {
             </a>
           </div>
         </div>
-        <p className="border-t border-slate-200 py-4 text-center text-xs text-slate-500">
-          © {YEAR} {COMPANY.name} · {COMPANY.city}
-        </p>
+        <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 border-t border-slate-200 py-4 text-xs text-slate-500">
+          <span>
+            © {YEAR} {COMPANY.name} · {COMPANY.city}
+          </span>
+          <Link to="/conditions-generales" className="hover:text-brand-700">
+            Conditions générales
+          </Link>
+          <Link to="/confidentialite" className="hover:text-brand-700">
+            Confidentialité
+          </Link>
+        </div>
       </footer>
     </div>
   )

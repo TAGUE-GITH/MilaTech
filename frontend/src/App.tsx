@@ -31,6 +31,8 @@ import SalesPage from './features/sales/SalesPage'
 import TrainingDetailPage from './features/trainings/TrainingDetailPage'
 import TrainingsPage from './features/trainings/TrainingsPage'
 import UsersPage from './features/users/UsersPage'
+import PrivacyPage from './features/legal/PrivacyPage'
+import TermsPage from './features/legal/TermsPage'
 import ClientQuotePage from './features/quotes/ClientQuotePage'
 import ClientRepairPage from './features/quotes/ClientRepairPage'
 import NewQuotePage from './features/quotes/NewQuotePage'
@@ -72,6 +74,8 @@ export default function App() {
       <Route element={<PublicLayout />}>
         <Route index element={<PublicHomePage />} />
         <Route path="contact" element={<ContactPage />} />
+        <Route path="conditions-generales" element={<TermsPage />} />
+        <Route path="confidentialite" element={<PrivacyPage />} />
         <Route path="inscription" element={<RegisterPage />} />
         <Route path="boutique" element={<ShopPage />} />
         <Route path="boutique/:id" element={<ShopProductPage />} />

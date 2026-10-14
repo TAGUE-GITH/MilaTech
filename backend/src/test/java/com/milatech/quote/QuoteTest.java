@@ -31,7 +31,7 @@ class QuoteTest extends IntegrationTest {
 		clients++;
 		String body = postAs(null, "/api/auth/register", """
 				{"firstName": "Awa", "lastName": "Ngono", "email": "awa%d@client.test", "phone": "677 11 22 33",
-				 "password": "%s"}""".formatted(clients, PASSWORD)).andReturn().getResponse().getContentAsString();
+				 "password": "%s", "acceptTerms": true}""".formatted(clients, PASSWORD)).andReturn().getResponse().getContentAsString();
 		String token = JsonPath.read(body, "$.token");
 		return new Client(token, ((Number) JsonPath.read(body, "$.user.customerId")).longValue());
 	}

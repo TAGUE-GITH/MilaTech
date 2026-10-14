@@ -93,6 +93,7 @@ describe('Site public', () => {
     await userEvent.type(screen.getByLabelText('Email'), 'awa@client.test')
     await userEvent.type(screen.getByLabelText('Téléphone'), '677112233')
     await userEvent.type(screen.getByLabelText('Mot de passe'), 'motdepasse-solide')
+    await userEvent.click(screen.getByRole('checkbox', { name: /J’ai lu et j’accepte les conditions générales/ }))
     await userEvent.click(screen.getByRole('button', { name: 'Créer mon compte' }))
 
     expect(authApi.register).toHaveBeenCalledWith({
@@ -101,6 +102,7 @@ describe('Site public', () => {
       email: 'awa@client.test',
       phone: '677112233',
       password: 'motdepasse-solide',
+      acceptTerms: true,
     })
     expect(await screen.findByText('Espace client')).toBeInTheDocument()
     expect(localStorage.getItem('milatech_token')).toBe('jeton')

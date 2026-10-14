@@ -9,6 +9,7 @@ import com.milatech.sale.Sale;
 import com.milatech.shop.OnlineOrder.DeliveryMode;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -33,8 +34,11 @@ public final class ShopDtos {
 			@Size(max = 255) String address,
 			@NotBlank(message = "Indiquez un numéro pour vous joindre.") @Size(max = 30) String phone,
 			@Size(max = 500, message = "500 caractères maximum.") String note,
-			@NotEmpty(message = "Votre panier est vide.") List<@Valid OrderLineRequest> lines) {
+			@NotEmpty(message = "Votre panier est vide.") List<@Valid OrderLineRequest> lines,
+			@NotNull(message = TERMS_REQUIRED) @AssertTrue(message = TERMS_REQUIRED) Boolean acceptTerms) {
 	}
+
+	static final String TERMS_REQUIRED = "Acceptez les conditions générales de vente pour commander.";
 
 	/** Changement d'etape par la boutique ; le moyen de paiement est demande a la remise, le motif a l'annulation. */
 	public record StatusRequest(

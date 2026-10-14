@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.milatech.auth.AuthController.LoginResponse;
 import com.milatech.common.ApiException;
+import com.milatech.common.Terms;
 import com.milatech.customer.Customer;
 import com.milatech.customer.CustomerRepository;
 import com.milatech.security.JwtService;
@@ -19,8 +20,10 @@ import com.milatech.user.UserDtos.UserResponse;
 import com.milatech.user.UserRepository;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 /**
@@ -37,8 +40,11 @@ public class RegisterController {
 			@NotBlank(message = "L'email est obligatoire.") @Email(message = "Email invalide.") String email,
 			@NotBlank(message = "Le téléphone est obligatoire.") @Size(max = 30) String phone,
 			@NotBlank(message = "Le mot de passe est obligatoire.")
-			@Size(min = 8, max = 100, message = "Le mot de passe doit contenir au moins 8 caractères.") String password) {
+			@Size(min = 8, max = 100, message = "Le mot de passe doit contenir au moins 8 caractères.") String password,
+			@NotNull(message = TERMS_REQUIRED) @AssertTrue(message = TERMS_REQUIRED) Boolean acceptTerms) {
 	}
+
+	static final String TERMS_REQUIRED = "Vous devez accepter les conditions générales et la politique de confidentialité.";
 
 	private final UserRepository users;
 	private final CustomerRepository customers;
@@ -66,6 +72,7 @@ public class RegisterController {
 		User user = new User(email, passwordEncoder.encode(request.password()), firstName, lastName,
 				customer.getPhone(), Role.CLIENT);
 		user.setCustomer(customer);
+		user.acceptTerms(Terms.VERSION);
 		users.save(user);
 		return new LoginResponse(jwtService.generateToken(user.getEmail()), UserResponse.of(user));
 	}

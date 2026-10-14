@@ -61,6 +61,12 @@ public class User {
 	@JoinColumn(name = "customer_id")
 	private Customer customer;
 
+	@Column(name = "terms_accepted_at")
+	private Instant termsAcceptedAt;
+
+	@Column(name = "terms_version")
+	private String termsVersion;
+
 	protected User() {
 	}
 
@@ -151,5 +157,19 @@ public class User {
 
 	public void setCustomer(Customer customer) {
 		this.customer = customer;
+	}
+
+	/** Conditions generales et politique de confidentialite acceptees (version lue et date). */
+	public void acceptTerms(String version) {
+		termsVersion = version;
+		termsAcceptedAt = Instant.now();
+	}
+
+	public Instant getTermsAcceptedAt() {
+		return termsAcceptedAt;
+	}
+
+	public String getTermsVersion() {
+		return termsVersion;
 	}
 }

@@ -24,7 +24,7 @@ class CustomerAccountTest extends IntegrationTest {
 	private String register(String email) {
 		return """
 				{"firstName": "Awa", "lastName": "Ngono", "email": "%s", "phone": "677 11 22 33",
-				 "password": "%s"}""".formatted(email, PASSWORD);
+				 "password": "%s", "acceptTerms": true}""".formatted(email, PASSWORD);
 	}
 
 	private String tokenOf(String json) {

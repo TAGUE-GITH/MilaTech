@@ -6,7 +6,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { errorMessage, fieldErrors, myOrdersApi, shopApi } from '../../api/client'
 import type { DeliveryMode } from '../../api/types'
 import { useAuth } from '../../auth/AuthProvider'
-import { Alert, Button, Card, Field, TextArea } from '../../components/ui'
+import { Alert, Button, Card, Checkbox, Field, TextArea } from '../../components/ui'
 import { buttonClasses } from '../../components/buttonClasses'
 import { COMPANY } from '../../lib/company'
 import { formatFcfa } from '../../lib/format'
@@ -26,6 +26,7 @@ export default function CartPage() {
   // null tant que le client n'a rien saisi : on propose le numero de son compte
   const [phone, setPhone] = useState<string | null>(null)
   const [note, setNote] = useState('')
+  const [acceptTerms, setAcceptTerms] = useState(false)
 
   const fee = deliveryFeeFor(mode, info.data?.deliveryFee ?? 0)
   const order = useMutation({
@@ -36,6 +37,7 @@ export default function CartPage() {
         phone: phone ?? user?.phone ?? '',
         note,
         lines: lines.map((line) => ({ productId: line.productId, quantity: line.quantity })),
+        acceptTerms,
       }),
     onSuccess: (placed) => {
       clear()
@@ -147,6 +149,23 @@ export default function CartPage() {
               </div>
             )}
             {user && isStaff && <Alert>Les commandes en ligne se font avec un compte client.</Alert>}
+            {user && !isStaff && (
+              <Checkbox
+                className="pt-2"
+                checked={acceptTerms}
+                onChange={(e) => setAcceptTerms(e.target.checked)}
+                error={errors.acceptTerms}
+                label={
+                  <>
+                    J’accepte les{' '}
+                    <Link to="/conditions-generales" target="_blank" className="font-semibold text-brand-700 underline">
+                      conditions générales de vente
+                    </Link>
+                    .
+                  </>
+                }
+              />
+            )}
             {user && !isStaff && (
               <Button type="submit" loading={order.isPending} className="mt-2 w-full">
                 Commander

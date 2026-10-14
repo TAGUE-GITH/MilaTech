@@ -4,6 +4,7 @@ import type { LucideIcon } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { shopApi } from '../../api/client'
 import { buttonClasses } from '../../components/buttonClasses'
+import { OpeningHours } from '../../components/OpeningHours'
 import { COMPANY, displayPhone } from '../../lib/company'
 import { PHOTOS, photoSrcSet, photoUrl } from '../../lib/photos'
 import type { Photo } from '../../lib/photos'
@@ -242,6 +243,7 @@ export default function PublicHomePage() {
               {COMPANY.directions}
             </span>
           </p>
+          <OpeningHours className="mt-5 text-slate-700" />
           <div className="mt-6 flex flex-wrap gap-3">
             {COMPANY.phones.map((phone) => (
               <a key={phone} href={`tel:+237${phone}`} className={buttonClasses('secondary')}>

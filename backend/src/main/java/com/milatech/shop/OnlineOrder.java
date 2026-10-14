@@ -69,6 +69,10 @@ public class OnlineOrder {
 	@Column(name = "cancel_reason")
 	private String cancelReason;
 
+	/** Version des conditions generales de vente acceptees par le client en commandant. */
+	@Column(name = "terms_version")
+	private String termsVersion;
+
 	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "sale_id")
 	private Sale sale;
@@ -94,6 +98,14 @@ public class OnlineOrder {
 		this.phone = phone;
 		this.note = note;
 		this.deliveryFee = deliveryFee;
+	}
+
+	public void acceptTerms(String version) {
+		termsVersion = version;
+	}
+
+	public String getTermsVersion() {
+		return termsVersion;
 	}
 
 	public void addLine(OnlineOrderLine line) {

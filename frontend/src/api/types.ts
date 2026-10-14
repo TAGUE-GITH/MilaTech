@@ -324,7 +324,7 @@ export type ContactMessage = {
 
 export type ContactForm = { name: string; phone: string; email: string; subject: string; message: string; website: string }
 
-export type RegisterForm = { firstName: string; lastName: string; email: string; phone: string; password: string }
+export type RegisterForm = { firstName: string; lastName: string; email: string; phone: string; password: string; acceptTerms: boolean }
 
 /** Produit tel qu'il apparait dans la boutique en ligne (sans reference interne ni prix d'achat) */
 export type ShopProduct = {
@@ -389,6 +389,7 @@ export type OrderForm = {
   phone: string
   note: string
   lines: { productId: number; quantity: number }[]
+  acceptTerms: boolean
 }
 
 export type QuoteStatus = 'NOUVELLE' | 'DEVIS_ENVOYE' | 'ACCEPTEE' | 'REFUSEE' | 'ANNULEE' | 'DEPOSEE'

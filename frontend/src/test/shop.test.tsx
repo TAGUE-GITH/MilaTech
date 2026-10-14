@@ -112,6 +112,7 @@ describe('Boutique en ligne', () => {
     await userEvent.click(await screen.findByText('Livraison à Yaoundé'))
     await userEvent.type(screen.getByLabelText('Quartier et repère'), 'Bonas, près de la pharmacie')
     expect(screen.getByLabelText('Téléphone pour vous joindre')).toHaveValue('677112233')
+    await userEvent.click(await screen.findByRole('checkbox', { name: /J’accepte les conditions générales de vente/ }))
     await userEvent.click(await screen.findByRole('button', { name: 'Commander' }))
 
     expect(myOrdersApi.place).toHaveBeenCalledWith({
@@ -123,6 +124,7 @@ describe('Boutique en ligne', () => {
         { productId: 1, quantity: 1 },
         { productId: 2, quantity: 2 },
       ],
+      acceptTerms: true,
     })
     expect(await screen.findByText('Suivi de la commande')).toBeInTheDocument()
     expect(JSON.parse(localStorage.getItem('milatech_cart')!)).toEqual([])
