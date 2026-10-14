@@ -463,3 +463,5 @@ export type ClientRepair = ClientRepairSummary & {
   parts: { productName: string; quantity: number; lineTotal: number }[]
   steps: { status: RepairStatus; label: string; at: string }[]
 }
+
+export type DemoInfo = { enabled: boolean; password?: string; accounts: { email: string; role: Role; name: string }[] }

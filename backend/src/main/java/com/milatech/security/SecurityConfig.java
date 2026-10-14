@@ -40,7 +40,7 @@ public class SecurityConfig {
 				.authorizeHttpRequests(auth -> auth
 						// Site public : inscription des clients, formulaire de contact, images (photos), catalogue de la boutique
 						.requestMatchers("/api/health", "/api/auth/login", "/api/auth/register", "/api/auth/forgot-password",
-								"/api/auth/reset-password", "/error").permitAll()
+								"/api/auth/reset-password", "/api/demo", "/error").permitAll()
 						.requestMatchers(HttpMethod.POST, "/api/contact").permitAll()
 						.requestMatchers(HttpMethod.GET, "/api/images/*", "/api/shop/**").permitAll()
 						.anyRequest().authenticated())

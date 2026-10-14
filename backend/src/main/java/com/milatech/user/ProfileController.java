@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.milatech.common.ApiException;
+import com.milatech.demo.DemoService;
 import com.milatech.image.Image;
 import com.milatech.image.ImageService;
 import com.milatech.user.UserDtos.UserResponse;
@@ -75,6 +76,9 @@ public class ProfileController {
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void changePassword(@Valid @RequestBody PasswordRequest request, @AuthenticationPrincipal User principal) {
 		User user = reload(principal);
+		// Les comptes de demonstration restent utilisables par tous les visiteurs
+		if (DemoService.isDemo(user))
+			throw ApiException.badRequest("Le mot de passe d'un compte de démonstration ne peut pas être changé.");
 		if (!passwordEncoder.matches(request.currentPassword(), user.getPasswordHash()))
 			throw ApiException.badRequest("Le mot de passe actuel est incorrect.");
 		user.setPasswordHash(passwordEncoder.encode(request.newPassword()));

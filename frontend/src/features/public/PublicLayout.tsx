@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { Link, NavLink, Outlet } from 'react-router-dom'
 import { homeOf, useAuth } from '../../auth/AuthProvider'
 import { Avatar } from '../../components/Avatar'
+import { DemoBanner } from '../../components/DemoBanner'
 import { buttonClasses } from '../../components/buttonClasses'
 import { COMPANY, displayPhone } from '../../lib/company'
 import { whatsappLink } from '../../lib/whatsapp'
@@ -73,6 +74,7 @@ export default function PublicLayout() {
   const [open, setOpen] = useState(false)
   return (
     <div className="flex min-h-dvh flex-col bg-white">
+      <DemoBanner />
       <header className="sticky top-0 z-30 border-b border-slate-200 bg-white/90 backdrop-blur">
         <div className="mx-auto flex max-w-6xl items-center gap-6 px-4 py-3 sm:px-6">
           <Logo />

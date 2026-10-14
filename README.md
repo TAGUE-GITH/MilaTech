@@ -10,7 +10,7 @@
 ![Docker](https://img.shields.io/badge/Docker-compose-2496ED?logo=docker&logoColor=white)
 ![CI](https://github.com/TAGUE-GITH/MilaTech/actions/workflows/ci.yml/badge.svg)
 
-> **État du projet :** Sprint 7 terminé (devis de réparation en ligne, suivi des réparations par le client). Prochain sprint : finitions, démonstration et mise en ligne.
+> **État du projet :** les 8 sprints sont terminés (mot de passe oublié, démonstration avec données fictives). Mise en ligne : voir [DEPLOIEMENT.md](DEPLOIEMENT.md).
 
 ## Le besoin
 
@@ -52,7 +52,7 @@ MilaTech gère aujourd'hui ses activités au cahier et sur WhatsApp : stock ince
 | 5 | Site public (vitrine, contact), comptes clients, espace personnel et photo de profil | ✅ |
 | 6 | Boutique en ligne : catalogue avec photos, panier, commandes (retrait ou livraison), traitement par la boutique | ✅ |
 | 7 | Devis de réparation en ligne (avec photo), réponse de la boutique, suivi des réparations par le client | ✅ |
-| 8 | Finitions, démonstration et mise en ligne | À venir |
+| 8 | Mot de passe oublié (Brevo), démonstration (données fictives, un compte par rôle), guide de mise en ligne | ✅ |
 
 ## Lancer le projet en local
 
@@ -68,8 +68,8 @@ Avec Docker (API + PostgreSQL) : `docker compose up --build`.
 ## Tests
 
 ```bash
-cd backend && ./mvnw test    # 101 tests : JUnit 5, Mockito, MockMvc
-cd frontend && npm test      # 57 tests : Vitest, Testing Library
+cd backend && ./mvnw test    # 111 tests : JUnit 5, Mockito, MockMvc
+cd frontend && npm test      # 61 tests : Vitest, Testing Library
 ```
 
 Les tests sont écrits avant le code (TDD) à partir des critères d'acceptation. GitHub Actions les exécute à chaque envoi, avec une vraie base PostgreSQL.

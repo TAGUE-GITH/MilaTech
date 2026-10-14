@@ -9,6 +9,7 @@ import type {
   CustomerDetail,
   CustomerForm,
   Dashboard,
+  DemoInfo,
   DepositForm,
   Enrollment,
   EnrollmentStatus,
@@ -91,6 +92,11 @@ const data = <T>(promise: Promise<{ data: T }>) => promise.then((response) => re
 // Les champs vides des formulaires deviennent null pour l'API
 const clean = (form: Record<string, unknown>) =>
   Object.fromEntries(Object.entries(form).map(([key, value]) => [key, value === '' ? null : value]))
+
+/** Mode demonstration : comptes publics affiches sur la page de connexion. */
+export const demoApi = {
+  info: () => data(api.get<DemoInfo>('/demo')),
+}
 
 export const healthApi = {
   get: () => data(api.get<{ status: string }>('/health')),

@@ -1,8 +1,10 @@
-import { CircuitBoard } from 'lucide-react'
+import { useQuery } from '@tanstack/react-query'
+import { CircuitBoard, PlayCircle } from 'lucide-react'
 import { useState } from 'react'
 import type { FormEvent } from 'react'
 import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom'
-import { errorMessage, fieldErrors } from '../../api/client'
+import { demoApi, errorMessage, fieldErrors } from '../../api/client'
+import { ROLE_LABELS } from '../../api/types'
 import { homeOf, useAuth } from '../../auth/AuthProvider'
 import { Alert, Button, Field } from '../../components/ui'
 
@@ -20,19 +22,23 @@ export default function LoginPage() {
 
   if (user) return <Navigate to={from ?? homeOf(user)} replace />
 
-  const submit = async (event: FormEvent) => {
-    event.preventDefault()
+  const connect = async (withEmail: string, withPassword: string) => {
     setSending(true)
     setError('')
     setErrors({})
     try {
-      const connected = await login(email, password)
+      const connected = await login(withEmail, withPassword)
       navigate(from ?? homeOf(connected), { replace: true })
     } catch (err) {
       setErrors(fieldErrors(err))
       setError(errorMessage(err))
       setSending(false)
     }
+  }
+
+  const submit = (event: FormEvent) => {
+    event.preventDefault()
+    connect(email, password)
   }
 
   return (
@@ -74,6 +80,7 @@ export default function LoginPage() {
             </Link>
           </p>
         </form>
+        <DemoAccounts onPick={connect} disabled={sending} />
         <p className="mt-6 text-center text-sm text-slate-600">
           Client sans compte ?{' '}
           <Link to="/inscription" state={from ? { from } : undefined} className="font-semibold text-brand-700">
@@ -88,5 +95,35 @@ export default function LoginPage() {
         </p>
       </div>
     </main>
+  )
+}
+
+/** Mode demonstration : un clic pour visiter l'application avec chaque role. */
+function DemoAccounts({ onPick, disabled }: { onPick: (email: string, password: string) => void; disabled: boolean }) {
+  const { data } = useQuery({ queryKey: ['demo'], queryFn: demoApi.info, staleTime: Infinity })
+  if (!data?.enabled || !data.password) return null
+  const password = data.password
+  return (
+    <div className="mt-6 rounded-2xl bg-amber-50 p-4 ring-1 ring-amber-200">
+      <p className="flex items-center gap-2 text-sm font-bold text-amber-900">
+        <PlayCircle className="size-4" aria-hidden />
+        Démonstration : essayez chaque rôle
+      </p>
+      <div className="mt-3 grid grid-cols-2 gap-2">
+        {data.accounts.map((account) => (
+          <button
+            key={account.email}
+            type="button"
+            disabled={disabled}
+            onClick={() => onPick(account.email, password)}
+            className="rounded-xl bg-white px-3 py-2 text-left text-sm ring-1 ring-amber-200 hover:bg-amber-100 disabled:opacity-60"
+          >
+            <span className="block font-semibold">{ROLE_LABELS[account.role]}</span>
+            <span className="block text-xs text-slate-500">{account.name}</span>
+          </button>
+        ))}
+      </div>
+      <p className="mt-2 text-xs text-amber-900">Mot de passe : {password}</p>
+    </div>
   )
 }

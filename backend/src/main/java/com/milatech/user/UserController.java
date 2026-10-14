@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.milatech.common.ApiException;
+import com.milatech.demo.DemoService;
 import com.milatech.user.UserDtos.CreateUserRequest;
 import com.milatech.user.UserDtos.UpdateUserRequest;
 import com.milatech.user.UserDtos.UserResponse;
@@ -61,6 +62,7 @@ public class UserController {
 	public UserResponse update(@PathVariable Long id, @Valid @RequestBody UpdateUserRequest request,
 			@AuthenticationPrincipal User current) {
 		User user = users.findById(id).orElseThrow(() -> ApiException.notFound("Employé introuvable."));
+		if (DemoService.isDemo(user)) throw ApiException.badRequest("Les comptes de démonstration ne peuvent pas être modifiés.");
 		// La boutique ne doit jamais rester sans gerant : on ne se retire pas soi-meme ses droits
 		boolean self = user.getId().equals(current.getId());
 		if (self && (Boolean.FALSE.equals(request.active()) || (request.role() != null && request.role() != Role.GERANT)))

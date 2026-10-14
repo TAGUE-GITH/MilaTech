@@ -3,7 +3,7 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { vi } from 'vitest'
-import { authApi } from '../api/client'
+import { authApi, demoApi } from '../api/client'
 import type { User } from '../api/types'
 import { AuthProvider } from '../auth/AuthProvider'
 import LoginPage from '../features/auth/LoginPage'
@@ -11,6 +11,7 @@ import LoginPage from '../features/auth/LoginPage'
 vi.mock('../api/client', async (importOriginal) => ({
   ...(await importOriginal<typeof import('../api/client')>()),
   authApi: { login: vi.fn(), me: vi.fn() },
+  demoApi: { info: vi.fn() },
 }))
 
 const awa: User = {
@@ -43,6 +44,7 @@ describe('Connexion (US-01)', () => {
   beforeEach(() => {
     localStorage.clear()
     vi.clearAllMocks()
+    vi.mocked(demoApi.info).mockResolvedValue({ enabled: false, accounts: [] })
   })
 
   it('connecte l employe, garde son jeton et ouvre l accueil', async () => {
@@ -71,5 +73,23 @@ describe('Connexion (US-01)', () => {
 
     expect(await screen.findByRole('alert')).toHaveTextContent('Email ou mot de passe incorrect.')
     expect(localStorage.getItem('milatech_token')).toBeNull()
+  })
+
+  it('en demonstration, connecte un role en un clic', async () => {
+    vi.mocked(demoApi.info).mockResolvedValue({
+      enabled: true,
+      password: 'demo-milatech-2026',
+      accounts: [
+        { email: 'gerant@demo.milatech.cm', role: 'GERANT', name: 'Paul Mbarga' },
+        { email: 'client@demo.milatech.cm', role: 'CLIENT', name: 'Awa Ngono' },
+      ],
+    })
+    vi.mocked(authApi.login).mockResolvedValue({ token: 'jeton', user: { ...awa, role: 'GERANT' } })
+    renderLogin()
+
+    await userEvent.click(await screen.findByRole('button', { name: /Gérant/ }))
+
+    expect(authApi.login).toHaveBeenCalledWith('gerant@demo.milatech.cm', 'demo-milatech-2026')
+    expect(await screen.findByText('Accueil')).toBeInTheDocument()
   })
 })

@@ -81,6 +81,11 @@ public class Sale {
 		margin += line.getLineMargin();
 	}
 
+	/** Donnees de demonstration uniquement : ventes reparties sur les jours precedents. */
+	public void backdate(Instant at) {
+		createdAt = at;
+	}
+
 	/** Reference lisible attribuee apres l'enregistrement : VTE-2026-00042 (R10). */
 	public void assignReference() {
 		reference = "VTE-%d-%05d".formatted(createdAt.atZone(ZONE).getYear(), id);
