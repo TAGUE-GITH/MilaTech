@@ -13,7 +13,8 @@ import com.milatech.user.User;
 import com.milatech.user.UserRepository;
 
 /**
- * Premier compte gerant, cree au demarrage si la base ne contient encore aucun employe.
+ * Compte du proprietaire (gerant), cree au demarrage s'il n'existe pas encore, meme si la demonstration a deja
+ * ses comptes. Un compte existant n'est jamais modifie : le mot de passe change ensuite dans le profil est garde.
  * En production, l'email et le mot de passe sont saisis par le gerant dans les variables d'environnement
  * de l'hebergeur (BOOTSTRAP_EMAIL, BOOTSTRAP_PASSWORD) : ils n'apparaissent jamais dans le code.
  */
@@ -37,8 +38,10 @@ public class ManagerBootstrap implements ApplicationRunner {
 
 	@Override
 	public void run(ApplicationArguments args) {
-		if (email.isBlank() || password.isBlank() || users.count() > 0) return;
-		users.save(new User(email, passwordEncoder.encode(password), "Gérant", "MilaTech", null, Role.GERANT));
-		log.info("Premier compte gérant créé : {}", email);
+		if (email.isBlank() || password.isBlank()) return;
+		String address = email.trim().toLowerCase();
+		if (users.existsByEmailIgnoreCase(address)) return;
+		users.save(new User(address, passwordEncoder.encode(password), "Gérant", "MilaTech", null, Role.GERANT));
+		log.info("Compte gérant du propriétaire créé : {}", address);
 	}
 }

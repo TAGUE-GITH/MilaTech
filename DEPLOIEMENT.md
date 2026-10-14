@@ -60,6 +60,18 @@ ventes, réparations, formations, commandes et devis, et 5 comptes (mot de passe
 Les emails partent par l'API web de Brevo : Render bloque les ports SMTP sur l'offre gratuite.
 Aucun email n'est jamais envoyé aux comptes de démonstration (adresses en `@demo.milatech.cm`).
 
+## 5. Compte du propriétaire (gérant privé)
+
+Les comptes de démonstration sont publics. Pour avoir son propre compte gérant :
+
+1. Sur Render, **Environment** : ajouter `BOOTSTRAP_EMAIL` (son email) et `BOOTSTRAP_PASSWORD` (un mot de passe provisoire),
+   puis **Save Changes** (le service redémarre).
+2. Au démarrage, ce compte gérant est créé s'il n'existe pas encore. Un compte existant n'est jamais modifié.
+3. Se connecter avec ce compte, puis changer le mot de passe dans **Mon profil**.
+4. Supprimer ensuite `BOOTSTRAP_PASSWORD` sur Render : il ne sert plus.
+
+Ce compte reçoit les emails « mot de passe oublié » et peut créer les comptes des employés (menu **Employés**).
+
 ## Pour la vraie boutique (plus tard)
 
 Une installation séparée (nouveau projet Neon, nouveau service Render) avec :

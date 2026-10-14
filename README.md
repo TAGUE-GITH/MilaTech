@@ -68,7 +68,7 @@ Avec Docker (API + PostgreSQL) : `docker compose up --build`.
 ## Tests
 
 ```bash
-cd backend && ./mvnw test    # 113 tests : JUnit 5, Mockito, MockMvc
+cd backend && ./mvnw test    # 116 tests : JUnit 5, Mockito, MockMvc
 cd frontend && npm test      # 66 tests : Vitest, Testing Library
 ```
 
