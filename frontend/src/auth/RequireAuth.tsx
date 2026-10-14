@@ -12,7 +12,9 @@ export function RequireAuth({ roles, children }: { roles?: Role[]; children: Rea
   const { user, loading } = useAuth()
   const location = useLocation()
   if (loading) return <Loader />
-  if (!user) return <Navigate to="/connexion" replace state={{ from: location.pathname }} />
+  // Les pages de la boutique renvoient vers la connexion du personnel, les autres vers celle des clients
+  const staffOnly = roles !== undefined && !roles.includes('CLIENT')
+  if (!user) return <Navigate to={staffOnly ? '/espace-boutique' : '/connexion'} replace state={{ from: location.pathname }} />
   if (roles && !roles.includes(user.role)) return <Navigate to={homeOf(user)} replace />
   return children
 }

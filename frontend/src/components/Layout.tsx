@@ -27,7 +27,6 @@ import { ROLE_LABELS } from '../api/types'
 import type { Role } from '../api/types'
 import { useAuth } from '../auth/AuthProvider'
 import { Avatar } from './Avatar'
-import { DemoBanner } from './DemoBanner'
 
 type NavItem = { to: string; label: string; Icon: LucideIcon; roles?: Role[]; badge?: 'newOrders' | 'newQuotes' }
 
@@ -168,9 +167,6 @@ export default function Layout() {
       )}
 
       <main className="min-w-0 flex-1 px-4 py-6 sm:px-6 lg:px-10 lg:py-8">
-        <div className="-mx-4 -mt-6 mb-6 sm:-mx-6 lg:-mx-10 lg:-mt-8">
-          <DemoBanner />
-        </div>
         <div className="mx-auto max-w-6xl">
           <Outlet />
         </div>

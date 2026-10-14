@@ -69,7 +69,7 @@ Avec Docker (API + PostgreSQL) : `docker compose up --build`.
 
 ```bash
 cd backend && ./mvnw test    # 116 tests : JUnit 5, Mockito, MockMvc
-cd frontend && npm test      # 66 tests : Vitest, Testing Library
+cd frontend && npm test      # 67 tests : Vitest, Testing Library
 ```
 
 Les tests sont écrits avant le code (TDD) à partir des critères d'acceptation. GitHub Actions les exécute à chaque envoi, avec une vraie base PostgreSQL.

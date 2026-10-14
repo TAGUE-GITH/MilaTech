@@ -67,6 +67,7 @@ export default function App() {
   return (
     <Routes>
       <Route path="/connexion" element={<LoginPage />} />
+      <Route path="/espace-boutique" element={<LoginPage space="staff" />} />
       <Route path="/mot-de-passe-oublie" element={<ForgotPasswordPage />} />
       <Route path="/reinitialiser" element={<ResetPasswordPage />} />
 

@@ -26,14 +26,15 @@ const awa: User = {
   createdAt: '2026-10-14T10:00:00Z',
 }
 
-const renderLogin = () =>
+const renderLogin = (space: 'client' | 'staff' = 'client') =>
   render(
     <QueryClientProvider client={new QueryClient()}>
       <AuthProvider>
         <MemoryRouter initialEntries={['/connexion']}>
           <Routes>
-            <Route path="/connexion" element={<LoginPage />} />
+            <Route path="/connexion" element={<LoginPage space={space} />} />
             <Route path="/accueil" element={<p>Accueil</p>} />
+            <Route path="/mon-espace" element={<p>Mon espace</p>} />
           </Routes>
         </MemoryRouter>
       </AuthProvider>
@@ -75,7 +76,7 @@ describe('Connexion (US-01)', () => {
     expect(localStorage.getItem('milatech_token')).toBeNull()
   })
 
-  it('en demonstration, connecte un role en un clic', async () => {
+  const demo = () =>
     vi.mocked(demoApi.info).mockResolvedValue({
       enabled: true,
       password: 'demo-milatech-2026',
@@ -84,12 +85,28 @@ describe('Connexion (US-01)', () => {
         { email: 'client@demo.milatech.cm', role: 'CLIENT', name: 'Awa Ngono' },
       ],
     })
-    vi.mocked(authApi.login).mockResolvedValue({ token: 'jeton', user: { ...awa, role: 'GERANT' } })
-    renderLogin()
 
+  it('en demonstration, l espace boutique propose les roles du personnel', async () => {
+    demo()
+    vi.mocked(authApi.login).mockResolvedValue({ token: 'jeton', user: { ...awa, role: 'GERANT' } })
+    renderLogin('staff')
+
+    expect(screen.getByRole('heading', { name: 'Espace boutique' })).toBeInTheDocument()
     await userEvent.click(await screen.findByRole('button', { name: /Gérant/ }))
+    expect(screen.queryByRole('button', { name: /client/i })).not.toBeInTheDocument()
 
     expect(authApi.login).toHaveBeenCalledWith('gerant@demo.milatech.cm', 'demo-milatech-2026')
     expect(await screen.findByText('Accueil')).toBeInTheDocument()
+  })
+
+  it('en demonstration, la connexion des clients ne propose que le compte client', async () => {
+    demo()
+    vi.mocked(authApi.login).mockResolvedValue({ token: 'jeton', user: { ...awa, role: 'CLIENT' } })
+    renderLogin()
+
+    await userEvent.click(await screen.findByRole('button', { name: 'Essayer en tant que client (démo)' }))
+    expect(screen.queryByRole('button', { name: /Gérant/ })).not.toBeInTheDocument()
+    expect(authApi.login).toHaveBeenCalledWith('client@demo.milatech.cm', 'demo-milatech-2026')
+    expect(await screen.findByText('Mon espace')).toBeInTheDocument()
   })
 })
