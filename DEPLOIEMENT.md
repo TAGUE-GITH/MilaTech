@@ -8,8 +8,9 @@ Navigateur ──► Vercel (site React) ──► Render (API Spring Boot, Dock
                                                  └──► Brevo (emails « mot de passe oublié »)
 ```
 
-Cette mise en ligne est une **démonstration** (`APP_DEMO=true`) : produits, clients et chiffres sont fictifs, et la page de
-connexion propose un compte par rôle. Les vraies données de MilaTech iront dans une installation séparée, avec `APP_DEMO=false`.
+Cette mise en ligne est une **démonstration** (`APP_DEMO=true`) : produits, clients et chiffres sont fictifs. La connexion des
+clients (`/connexion`) propose « Essayer en tant que client », l'espace boutique (`/espace-boutique`) propose un compte par rôle
+du personnel. Les vraies données de MilaTech iront dans une installation séparée, avec `APP_DEMO=false`.
 
 ## 1. Base de données — Neon
 
