@@ -68,6 +68,11 @@ export default function LoginPage() {
           <Button type="submit" loading={sending} className="w-full">
             Se connecter
           </Button>
+          <p className="text-center text-sm">
+            <Link to="/mot-de-passe-oublie" className="font-semibold text-brand-700">
+              Mot de passe oublié ?
+            </Link>
+          </p>
         </form>
         <p className="mt-6 text-center text-sm text-slate-600">
           Client sans compte ?{' '}

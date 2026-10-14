@@ -4,7 +4,9 @@ import { STAFF_ROLES } from './api/types'
 import type { Role } from './api/types'
 import { RequireAuth } from './auth/RequireAuth'
 import Layout from './components/Layout'
+import ForgotPasswordPage from './features/auth/ForgotPasswordPage'
 import LoginPage from './features/auth/LoginPage'
+import ResetPasswordPage from './features/auth/ResetPasswordPage'
 import CatalogPage from './features/catalog/CatalogPage'
 import CustomerDetailPage from './features/customers/CustomerDetailPage'
 import CustomersPage from './features/customers/CustomersPage'
@@ -63,6 +65,8 @@ export default function App() {
   return (
     <Routes>
       <Route path="/connexion" element={<LoginPage />} />
+      <Route path="/mot-de-passe-oublie" element={<ForgotPasswordPage />} />
+      <Route path="/reinitialiser" element={<ResetPasswordPage />} />
 
       {/* Site public : vitrine, boutique en ligne, contact, inscription et espace des clients */}
       <Route element={<PublicLayout />}>

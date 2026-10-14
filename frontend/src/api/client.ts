@@ -101,6 +101,8 @@ export const authApi = {
     data(api.post<{ token: string; user: User }>('/auth/login', { email, password })),
   register: (form: RegisterForm) => data(api.post<{ token: string; user: User }>('/auth/register', form)),
   me: () => data(api.get<User>('/auth/me')),
+  forgotPassword: (email: string) => api.post('/auth/forgot-password', { email }),
+  resetPassword: (token: string, password: string) => api.post('/auth/reset-password', { token, password }),
 }
 
 /** Espace personnel : informations, mot de passe et photo de chaque utilisateur. */
