@@ -37,7 +37,8 @@ export default function TrainingDetailPage() {
       {training.description && <p className="-mt-3 mb-6 text-sm text-slate-600">{training.description}</p>}
 
       <div className="grid gap-6 lg:grid-cols-[1fr_22rem] print:block">
-        <section>
+        {/* min-w-0 : le tableau defile dans sa zone au lieu d'elargir la page sur telephone */}
+        <section className="min-w-0">
           <div className="mb-3 flex flex-wrap gap-4 text-sm print:hidden">
             <span>
               <strong>{active.length}</strong> / {training.capacity} apprenants
